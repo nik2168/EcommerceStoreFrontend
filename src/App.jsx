@@ -1,95 +1,56 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import {
-  About,
-  Cart,
-  Checkout,
-  Error,
-  HomeLayout,
-  Landing,
-  Login,
-  Orders,
-  Products,
-  Register,
-  SingleProduct,
-} from "./pages";
-
-import { ErrorElement } from "./components";
-
-// loaders
-import { loader as landingLoader } from "./pages/Landing";
-import { loader as singleProductLoader } from "./pages/SingleProduct";
-import { loader as productsLoader } from "./pages/Products";
-import { loader as checkoutLoader } from "./pages/Checkout";
-import { loader as ordersLoader } from "./pages/Orders";
-// actions
-import { action as registerAction } from "./pages/Register";
-import { action as loginAction } from "./pages/Login";
-import { action as checkoutAction } from "./components/CheckoutForm";
-import { store } from "./store";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+// import {
+//   About,
+//   Cart,
+//   Checkout,
+//   Error,
+//   HomeLayout,
+//   Landing,
+//   Login,
+//   Orders,
+//   Products,
+//   Register,
+//   SingleProduct,
+// } from "./pages";
+import HomeLayout from "./pages/HomeLayout";
+import ProtectRoute from "./auth/ProtectRoute";
+import Login from "./pages/Login";
+  import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import Register from "./pages/Register";
 
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomeLayout />,
-    errorElement: <Error />,
-    children: [
-      {
-        index: true,
-        element: <Landing />,
-        errorElement: <ErrorElement />,
-        // loader: landingLoader(queryClient),
-      },
-      {
-        path: "products",
-        element: <Products />,
-        errorElement: <ErrorElement />,
-        // loader: productsLoader(queryClient),
-      },
-      {
-        path: "products/:id",
-        element: <SingleProduct />,
-        errorElement: <ErrorElement />,
-        // loader: singleProductLoader(queryClient),
-      },
-      {
-        path: "cart",
-        element: <Cart />,
-      },
-      {
-        path: "about",
-        element: <About />,
-      },
-      {
-        path: "checkout",
-        element: <Checkout />,
-        // loader: checkoutLoader(store),
-        // action: checkoutAction(store, queryClient),
-      },
-      {
-        path: "orders",
-        element: <Orders />,
-        // loader: ordersLoader(store, queryClient),
-      },
-    ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
-    errorElement: <Error />,
-    // action: loginAction(store),
-  },
-  {
-    path: "/register",
-    element: <Register />,
-    errorElement: <Error />,
-    // action: registerAction,
-  },
-]);
 
 const App = () => {
+  const user = useSelector((state) => state.userState);
   return (
-      <RouterProvider router={router} />
+    <BrowserRouter>
+      <Routes>
+        <Route element={<ProtectRoute user={user} />}>
+          <Route path="/" element={<HomeLayout />} />
+          {/* <Route path="/" element={<HomeLayout />} />
+          <Route path="/" element={<HomeLayout />} /> */}
+        </Route>
+        <Route
+          path="/login"
+          element={
+            <ProtectRoute user={user} redirect="/">
+              <Login />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <ProtectRoute user={user} redirect="/">
+              <Register/>
+            </ProtectRoute>
+          }
+        />
+      </Routes>
+      <Toaster />
+    </BrowserRouter>
   );
 };
 export default App;
