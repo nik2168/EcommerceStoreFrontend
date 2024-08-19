@@ -6,13 +6,13 @@ const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${server}`,
   }),
-  tagTypes: [""],
+  tagTypes: ["Featured"],
   endpoints: (builder) => ({
-    curWeather: builder.query({
-      query: (name) => ({
-        url: `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=6cfb46eca0d4f9bd7c6518971820b06f`,
+    featuredProducts: builder.query({
+      query: (flag) => ({
+        url: `/api/v1/product/products?featured=${flag}`,
       }),
-      providesTags: ["Weather"],
+      providesTags: ["Featured"],
     }),
   }),
 });
@@ -20,5 +20,5 @@ const api = createApi({
 export default api;
 
 export const {
-
+useFeaturedProductsQuery,
 } = api;

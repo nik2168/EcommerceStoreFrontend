@@ -1,4 +1,10 @@
+import Filters from "../components/Filters";
+import PaginationContainer from "../components/PaginationContainer";
+import ProductsContainer from "../components/ProductsContainer";
+
+
 // import { Filters, PaginationContainer, ProductsContainer } from '../components';
+
 // import { customFetch } from '../utils';
 // const url = '/products';
 
@@ -37,13 +43,16 @@
 //     return { products, meta, params };
 //   };
 
-// const Products = () => {
-//   return (
-//     <>
-//       <Filters />
-//       <ProductsContainer />
-//       <PaginationContainer />
-//     </>
-//   );
-// };
-// export default Products;
+const Products = () => {
+
+
+
+  return (
+    <>
+      <Filters />
+      <ProductsContainer />
+      {/* <PaginationContainer /> */}
+    </>
+  );
+};
+export default Products;

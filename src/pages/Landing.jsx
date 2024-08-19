@@ -1,26 +1,19 @@
-// import { FeaturedProducts, Hero } from '../components';
+import FeaturedProducts from '../components/FeaturedProducts';
+import Hero from '../components/Hero';
+import Loading from '../components/Loading';
+import { useFeaturedProductsQuery } from '../features/api';
+import { useErrors } from '../hooks/hook';
 
-// import { customFetch } from '../utils';
-// const url = '/products?featured=true';
+const Landing = () => {
+      const { isLoading, data, isError, error, refetch } =
+        useFeaturedProductsQuery(true);
 
-// const featuredProductsQuery = {
-//   queryKey: ['featuredProducts'],
-//   queryFn: () => customFetch(url),
-// };
-
-// export const loader = (queryClient) => async () => {
-//   const response = await queryClient.ensureQueryData(featuredProductsQuery);
-
-//   const products = response.data.data;
-//   return { products };
-// };
-
-// const Landing = () => {
-//   return (
-//     <>
-//       <Hero />
-//       <FeaturedProducts />
-//     </>
-//   );
-// };
-// export default Landing;
+      useErrors([{ isError, error }]);
+  return isLoading ? (<Loading/>) :(
+    <>
+      <Hero />
+      <FeaturedProducts data={data}/>
+    </>
+  );
+};
+export default Landing;
