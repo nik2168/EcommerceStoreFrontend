@@ -1,23 +1,23 @@
 import { formatPrice } from '../utils';
 import { useState } from 'react';
-const FormRange = ({ label, name, size, price }) => {
-  const step = 1000;
-  const maxPrice = 100000;
-  const [selectedPrice, setSelectedPrice] = useState(price || maxPrice);
+const FormRange = ({ label, name, size, price, value, setValue, }) => {
+  const step = 10;
+  const maxPrice = 1000;
+  // const [selectedPrice, setSelectedPrice] = useState(price || maxPrice);
 
   return (
     <div className='form-control'>
       <label htmlFor={name} className='label cursor-pointer'>
         <span className='label-text capitalize'>{label}</span>
-        <span>{formatPrice(selectedPrice)}</span>
+        <span>{formatPrice(value)}</span>
       </label>
       <input
         type='range'
         name={name}
         min={0}
         max={maxPrice}
-        value={selectedPrice}
-        onChange={(e) => setSelectedPrice(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         className={`range range-primary ${size}`}
         step={step}
       />

@@ -1,4 +1,14 @@
-const FormSelect = ({ label, name, list, defaultValue, size, value, setValue }) => {
+const FormSelectOrder = ({ label, name, list, defaultValue, size, value, setValue }) => {
+  
+const changeValue = (e) => {
+  const curVal = e.currentTarget.value;
+  if(curVal === 'none'){
+    setValue('')
+  }
+  else if(curVal === 'a-z' || curVal === 'low') setValue('1')
+    else setValue('-1')
+}
+
   return (
     <div className='form-control'>
       <label htmlFor={name} className='label'>
@@ -9,7 +19,7 @@ const FormSelect = ({ label, name, list, defaultValue, size, value, setValue }) 
         id={name}
         className={`select select-bordered ${size}`}
         value={value}
-        onChange={(e) => setValue(e.currentTarget.value)}
+        onChange={(e) => changeValue(e)}
         defaultValue={defaultValue}
       >
         {list?.map((item) => {
@@ -23,4 +33,4 @@ const FormSelect = ({ label, name, list, defaultValue, size, value, setValue }) 
     </div>
   );
 };
-export default FormSelect;
+export default FormSelectOrder;

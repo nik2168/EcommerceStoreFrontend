@@ -10,7 +10,7 @@ export const formatPrice = (price) => {
   const dollarsAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'INR',
-  }).format((price).toFixed(2));
+  }).format((Number(price)).toFixed(2));
   return dollarsAmount;
 };
 

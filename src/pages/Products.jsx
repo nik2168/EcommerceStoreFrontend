@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Filters from "../components/Filters";
 import PaginationContainer from "../components/PaginationContainer";
 import ProductsContainer from "../components/ProductsContainer";
@@ -45,6 +46,7 @@ import ProductsContainer from "../components/ProductsContainer";
 
 const Products = () => {
 
+  const [products, setProducts] = useState({})
 
 
   return (

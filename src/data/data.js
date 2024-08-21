@@ -8,3 +8,12 @@ export const productData = [
     company: "Apple",
   },
 ];
+
+export const companyData = ["all", "Apple", "Samsung", "Puma", "H&M"];
+export const categoryData = [
+  "all",
+  "Electronics",
+  "Fashion",
+  "Footwears",
+  "Mobile & Accessories",
+];
