@@ -6,9 +6,8 @@ const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${server}`,
   }),
-  tagTypes: ["Featured"],
+  tagTypes: ["Featured", "Products", "Categories", "Companies"],
   endpoints: (builder) => ({
-
     featuredProducts: builder.query({
       query: (flag) => ({
         url: `/api/v1/product/products?featured=${flag}`,
@@ -18,14 +17,32 @@ const api = createApi({
 
     filterProducts: builder.query({
       query: (query) => ({
-        url: '/api/v1/product/products',
+        url: `/api/v1/product/productsfilter${query}`,
       }),
-      providesTags: ['Products']
-    })
+      keepUnusedDataFor: 0,
+    }),
 
+    fetchCategories: builder.query({
+      query: () => ({
+        url: "/api/v1/category/",
+      }),
+      providesTags: ["Categories"],
+    }),
+
+    fetchCompanies: builder.query({
+      query: () => ({
+        url: "/api/v1/company/",
+      }),
+      providesTags: ["Companies"],
+    }),
   }),
 });
 
 export default api;
 
-export const { useFeaturedProductsQuery } = api;
+export const {
+  useFeaturedProductsQuery,
+  useLazyFilterProductsQuery,
+  useFetchCategoriesQuery,
+  useFetchCompaniesQuery,
+} = api;

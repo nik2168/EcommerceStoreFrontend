@@ -1,23 +1,22 @@
-import { useLoaderData } from 'react-router-dom';
-import ProductsGrid from './ProductsGrid';
-import ProductsList from './ProductsList';
-import { useState } from 'react';
-import { BsFillGridFill, BsList } from 'react-icons/bs';
-import { productData } from '../data/data';
+import { useState } from "react";
+import { BsFillGridFill, BsList } from "react-icons/bs";
+import { useSelector } from "react-redux";
+import ProductsGrid from "./ProductsGrid";
+import ProductsList from "./ProductsList";
 
+const ProductsContainer = ({}) => {
+  
+  const { product } = useSelector((state) => state.productState);
 
-const ProductsContainer = () => {
-//   const { meta } = useLoaderData();
-//   const totalProducts = meta.pagination.total;
-  const totalProducts = productData.length
+  const totalProducts = product?.length || 0;
 
-  const [layout, setLayout] = useState('grid');
+  const [layout, setLayout] = useState("grid");
 
   const setActiveStyles = (pattern) => {
     return `text-xl btn btn-circle btn-sm ${
       pattern === layout
-        ? 'btn-primary text-primary-content'
-        : 'btn-ghost text-based-content'
+        ? "btn-primary text-primary-content"
+        : "btn-ghost text-based-content"
     }`;
   };
 
@@ -52,9 +51,9 @@ const ProductsContainer = () => {
             Sorry, no products matched your search...
           </h5>
         ) : layout === "grid" ? (
-          <ProductsGrid data={productData} />
+          <ProductsGrid data={product} />
         ) : (
-          <ProductsList data={productData} />
+          <ProductsList data={product} />
         )}
       </div>
     </>

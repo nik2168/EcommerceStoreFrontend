@@ -8,7 +8,10 @@ const Landing = () => {
       const { isLoading, data, isError, error, refetch } =
         useFeaturedProductsQuery(true);
 
+
       useErrors([{ isError, error }]);
+
+      
   return isLoading ? (<Loading/>) :(
     <>
       <Hero />

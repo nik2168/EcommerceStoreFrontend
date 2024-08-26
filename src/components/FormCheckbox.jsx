@@ -9,7 +9,7 @@ const FormCheckbox = ({ label, name, defaultValue, size, value, setValue }) => {
         name={name}
         value={value}
         checked={value}
-        onClick={() => setValue(!value)}
+        onChange={() => setValue(!value)}
         defaultChecked={defaultValue}
         className={`checkbox checkbox-primary ${size}`}
       />

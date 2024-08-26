@@ -2,17 +2,15 @@ import { Link } from "react-router-dom";
 import { formatPrice } from '../utils';
 import { productData } from "../data/data";
 
-const ProductsGrid = ({data}) => {
-  const products = data || [];
-  console.log(products);
-  
-
+const ProductsGrid = ({ data }) => {
+  const products = data;
+  // console.log(products);
 
   return (
     <div className="pt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {products?.map((product) => {
         const { title, price, image } = product;
-        const dollarsAmount = formatPrice(price) ;
+        const dollarsAmount = formatPrice(price);
         return (
           <Link
             key={product._id}
