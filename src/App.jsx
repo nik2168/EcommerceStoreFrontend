@@ -15,7 +15,7 @@ import Loading from "./components/Loading";
 
 const About = lazy(() => import("./pages/About"));
 const Products = lazy(() => import("./pages/Products"));
-
+const Cart = lazy(() => import('./pages/Cart'))
 
 const App = () => {
   const { user } = useSelector((state) => state.userState);
@@ -30,6 +30,7 @@ const App = () => {
             <Route index element={<Landing />} />
             <Route path="/about" element={<About />}/>
             <Route path="/products" element={<Products />}/>
+            <Route path="/cart" element={<Cart />}/>
           </Route>
         </Route>
 

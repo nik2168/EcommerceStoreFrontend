@@ -35,6 +35,7 @@ const api = createApi({
       }),
       providesTags: ["Companies"],
     }),
+    
   }),
 });
 
