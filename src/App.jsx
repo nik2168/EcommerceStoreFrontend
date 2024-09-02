@@ -15,6 +15,7 @@ import Loading from "./components/Loading";
 
 const About = lazy(() => import("./pages/About"));
 const Products = lazy(() => import("./pages/Products"));
+const SingleProduct = lazy(() => import("./pages/SingleProduct"))
 const Cart = lazy(() => import('./pages/Cart'))
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
             <Route index element={<Landing />} />
             <Route path="/about" element={<About />}/>
             <Route path="/products" element={<Products />}/>
+            <Route path="/products/:id" element={<SingleProduct />}/>
             <Route path="/cart" element={<Cart />}/>
           </Route>
         </Route>

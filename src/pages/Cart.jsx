@@ -4,16 +4,22 @@ import { Link } from 'react-router-dom';
 import CartItemsList from '../components/CartItemsList';
 import SectionTitle from '../components/SectionTitle';
 import CartTotals from '../components/CartTotals';
+import { useFetchUserCartQuery } from '../features/api';
+import { useErrors } from '../hooks/hook';
 
 
 const Cart = () => {
   const user = useSelector((state) => state.userState.user);
+  const {isError, error, data, refetch, isLoading} = useFetchUserCartQuery({token: user?.token});
+  useErrors([{isError, error}])
+  console.log("data", data)
 
   const numItemsInCart = useSelector((state) => state.cartState.numItemsInCart);
 
   if (numItemsInCart === 0) {
     return <SectionTitle text='Your cart is empty' />;
   }
+
 
   return (
     <>
