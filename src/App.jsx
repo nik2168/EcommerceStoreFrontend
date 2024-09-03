@@ -10,6 +10,8 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Loading from "./components/Loading";
+import { useErrors } from "./hooks/hook";
+import { useSingleProductQuery } from "./features/api";
 
 
 

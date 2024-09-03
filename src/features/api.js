@@ -22,13 +22,6 @@ const api = createApi({
       keepUnusedDataFor: 0,
     }),
 
-    getSingleProduct: builder.query({
-      query: (query) => ({
-        url: `/api/v1/product/${query}`,
-      }),
-      providesTags: ["SingleProduct"]
-    }),
-
     fetchCategories: builder.query({
       query: () => ({
         url: "/api/v1/category/",
@@ -51,7 +44,14 @@ const api = createApi({
         body: data
       }),
       providesTags: ["Cart"]
-    })
+    }),
+
+    singleProduct: builder.query({
+      query: () => ({
+        url: `/api/v1/product/getsingleproduct/66cb705489101453f2c3f434`,
+      }),
+      keepUnusedDataFor: 0,
+    }),
     
   }),
 });
@@ -61,8 +61,8 @@ export default api;
 export const {
   useFeaturedProductsQuery,
   useLazyFilterProductsQuery,
-  useGetSingleProductQuery,
   useFetchCategoriesQuery,
   useFetchCompaniesQuery,
   useFetchUserCartQuery,
+  useSingleProductQuery,
 } = api;

@@ -4,61 +4,73 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../features/cart/cartSlice';
-import { useGetSingleProductQuery } from '../features/api';
 import { useErrors } from '../hooks/hook';
+import { useSingleProductQuery } from '../features/api';
+import Loading from '../components/Loading';
 
-const singleProductQuery = (id) => {
-  return {
-    queryKey: ['singleProduct', id],
-    queryFn: () => customFetch(`/products/${id}`),
-  };
-};
+// const singleProductQuery = (id) => {
+//   return {
+//     queryKey: ['singleProduct', id],
+//     queryFn: () => customFetch(`/products/${id}`),
+//   };
+// };
 
-export const loader =
-  (queryClient) =>
-  async ({ params }) => {
-    const response = await queryClient.ensureQueryData(
-      singleProductQuery(params.id)
-    );
+// export const loader =
+//   (queryClient) =>
+//   async ({ params }) => {
+//     const response = await queryClient.ensureQueryData(
+//       singleProductQuery(params.id)
+//     );
 
-    return { product: response.data.data };
-  };
+//     return { product: response.data.data };
+//   };
+const product = [{
+  name: "Iphone",
+  image: "",
+  title: "price",
+  description: "jhgstuihquitf",
+  color: ["#000000"],
+  company: "Apple"
+}]
 
 const SingleProduct = () => {
-//   const { product } = useLoaderData();
-const productId = useParams()
- const{isError, error, data, isLoading, refetch} = useGetSingleProductQuery(productId.id)
+const params = useParams()
+const productId = params.id
+ const{isError, error, data, isLoading, refetch} = useSingleProductQuery({productId : productId.toString()})
 useErrors([{isError, error}])
- console.log("data", data, productId?.id)
 
-  const { image, title, price, description, colors, company } =
-    product.attributes;
-  const dollarsAmount = formatPrice(price);
-  const [productColor, setProductColor] = useState(colors[0]);
+ const product = data?.product;
+ console.log(product)
+
+  // const { image, title, price, description, colors, company } =
+  //   product;
+  // const dollarsAmount = formatPrice(price);
+  // const [productColor, setProductColor] = useState(colors[0]);
   const [amount, setAmount] = useState(1);
 
   const handleAmount = (e) => {
     setAmount(parseInt(e.target.value));
   };
 
-  const cartProduct = {
-    cartID: product.id + productColor,
-    productID: product.id,
-    image,
-    title,
-    price,
-    company,
-    productColor,
-    amount,
-  };
+  // const cartProduct = {
+  //   cartID: product.id + productColor,
+  //   productID: product.id,
+  //   image,
+  //   title,
+  //   price,
+  //   company,
+  //   productColor,
+  //   amount,
+  // };
 
   const dispatch = useDispatch();
 
   const addToCart = () => {
     dispatch(addItem({ product: cartProduct }));
   };
+  // return <h1>HI</h1>
 
-  return (
+  return isLoading ? ( <Loading/>) : (
     <section>
       <div className='text-md breadcrumbs'>
         <ul>
@@ -74,28 +86,28 @@ useErrors([{isError, error}])
       <div className='mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16'>
         {/* IMAGE */}
         <img
-          src={image}
-          alt={title}
+          src={product?.image}
+          alt={product?.title}
           className='w-96 h-96 object-cover rounded-lg lg:w-full'
         />
         {/* PRODUCT */}
         <div>
-          <h1 className='capitalize text-3xl font-bold'>{title}</h1>
+          <h1 className='capitalize text-3xl font-bold'>{product?.title}</h1>
           <h4 className='text-xl text-neutral-content font-bold mt-2'>
-            {company}
+            {product?.company}
           </h4>
-          <p className='mt-3 text-xl'>{dollarsAmount}</p>
-          <p className='mt-6 leading-8'>{description}</p>
+          <p className='mt-3 text-xl'>{product?.price}</p>
+          <p className='mt-6 leading-8'>{product?.description}</p>
           {/* COLORS */}
           <div className='mt-6'>
             <h4 className='text-md font-medium tracking-wider capitalize'>
               colors
             </h4>
-            <div className='mt-2'>
-              {colors.map((color) => {
+            {/* <div className='mt-2'>
+              {product?.colors?.map((color) => {
                 return (
                   <button
-                    key={color}
+                    key={product?.colors}
                     type='button'
                     className={`badge w-6 h-6 mr-2 ${
                       color === productColor && 'border-2 border-secondary'
@@ -105,7 +117,7 @@ useErrors([{isError, error}])
                   ></button>
                 );
               })}
-            </div>
+            </div> */}
           </div>
           {/* AMOUNT */}
           <div className='form-control w-full max-w-xs'>
@@ -117,7 +129,7 @@ useErrors([{isError, error}])
             <select
               className='select select-secondary select-bordered select-md'
               id='amount'
-              value={amount}
+              value={product?.amount}
               onChange={handleAmount}
             >
               {generateAmountOptions(20)}
@@ -126,7 +138,7 @@ useErrors([{isError, error}])
           {/* CART BTN */}
           <div className='mt-10'>
             <button className='btn btn-secondary btn-md' onClick={addToCart}>
-              Add to bag
+              Add to Cart
             </button>
           </div>
         </div>
