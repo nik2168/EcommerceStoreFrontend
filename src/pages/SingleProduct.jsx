@@ -24,18 +24,19 @@ import Loading from '../components/Loading';
 
 //     return { product: response.data.data };
 //   };
-const product = [{
-  name: "Iphone",
-  image: "",
-  title: "price",
-  description: "jhgstuihquitf",
-  color: ["#000000"],
-  company: "Apple"
-}]
+// const product = [{
+//   name: "Iphone",
+//   image: "",
+//   title: "price",
+//   description: "jhgstuihquitf",
+//   color: ["#000000"],
+//   company: "Apple"
+// }]
 
 const SingleProduct = () => {
 const params = useParams()
 const productId = params.id
+
  const{isError, error, data, isLoading, refetch} = useSingleProductQuery({productId : productId.toString()})
 useErrors([{isError, error}])
 
@@ -44,7 +45,7 @@ useErrors([{isError, error}])
 
   // const { image, title, price, description, colors, company } =
   //   product;
-  // const dollarsAmount = formatPrice(price);
+  const dollarsAmount = formatPrice(product?.price || 14000);
   // const [productColor, setProductColor] = useState(colors[0]);
   const [amount, setAmount] = useState(1);
 
@@ -52,83 +53,85 @@ useErrors([{isError, error}])
     setAmount(parseInt(e.target.value));
   };
 
-  // const cartProduct = {
-  //   cartID: product.id + productColor,
-  //   productID: product.id,
-  //   image,
-  //   title,
-  //   price,
-  //   company,
-  //   productColor,
-  //   amount,
-  // };
+  const cartProduct = {
+    cartID: product?._id,
+    productID: productId,
+    image: product?.image,
+    title: product?.title,
+    price: product?.price,
+    company: product?.company?.name,
+    productColor: product?.colors,
+    // amount: product?.pr,
+  };
 
   const dispatch = useDispatch();
 
   const addToCart = () => {
-    dispatch(addItem({ product: cartProduct }));
+    dispatch(addItem({ product: cartProduct || {} }));
   };
   // return <h1>HI</h1>
 
-  return isLoading ? ( <Loading/>) : (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <section>
-      <div className='text-md breadcrumbs'>
+      <div className="text-md breadcrumbs">
         <ul>
           <li>
-            <Link to='/'>Home</Link>
+            <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to='/products'>Products</Link>
+            <Link to="/products">Products</Link>
           </li>
         </ul>
       </div>
       {/* PRODUCT */}
-      <div className='mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16'>
+      <div className="mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16">
         {/* IMAGE */}
         <img
           src={product?.image}
           alt={product?.title}
-          className='w-96 h-96 object-cover rounded-lg lg:w-full'
+          className="w-96 h-96 object-cover rounded-lg lg:w-full"
         />
         {/* PRODUCT */}
         <div>
-          <h1 className='capitalize text-3xl font-bold'>{product?.title}</h1>
-          <h4 className='text-xl text-neutral-content font-bold mt-2'>
-            {product?.company}
+          <h1 className="capitalize text-3xl font-bold">{product?.title}</h1>
+          <h4 className="text-xl text-neutral-content font-bold mt-2">
+            {product?.company?.name}
           </h4>
-          <p className='mt-3 text-xl'>{product?.price}</p>
-          <p className='mt-6 leading-8'>{product?.description}</p>
+          <p className="mt-3 text-xl">{dollarsAmount}</p>
+          <p className="mt-6 leading-8">{product?.description}</p>
           {/* COLORS */}
-          <div className='mt-6'>
-            <h4 className='text-md font-medium tracking-wider capitalize'>
+          <div className="mt-6">
+            <h4 className="text-md font-medium tracking-wider capitalize">
               colors
             </h4>
-            {/* <div className='mt-2'>
+            <div className='mt-2'>
               {product?.colors?.map((color) => {
                 return (
                   <button
-                    key={product?.colors}
+                    key={color}
                     type='button'
                     className={`badge w-6 h-6 mr-2 ${
-                      color === productColor && 'border-2 border-secondary'
+                      color === color && 'border-2 border-secondary'
                     }`}
                     style={{ backgroundColor: color }}
                     onClick={() => setProductColor(color)}
                   ></button>
                 );
               })}
-            </div> */}
+            </div>
           </div>
           {/* AMOUNT */}
-          <div className='form-control w-full max-w-xs'>
-            <label className='label' htmlFor='amount'>
-              <h4 className='text-md font-medium -tracking-wider capitalize'>
+          <div className="form-control w-full max-w-xs">
+            <label className="label" htmlFor="amount">
+              <h4 className="text-md font-medium -tracking-wider capitalize">
                 amount
               </h4>
             </label>
             <select
-              className='select select-secondary select-bordered select-md'
-              id='amount'
+              className="select select-secondary select-bordered select-md"
+              id="amount"
               value={product?.amount}
               onChange={handleAmount}
             >
@@ -136,8 +139,8 @@ useErrors([{isError, error}])
             </select>
           </div>
           {/* CART BTN */}
-          <div className='mt-10'>
-            <button className='btn btn-secondary btn-md' onClick={addToCart}>
+          <div className="mt-10">
+            <button className="btn btn-secondary btn-md" onClick={addToCart}>
               Add to Cart
             </button>
           </div>
