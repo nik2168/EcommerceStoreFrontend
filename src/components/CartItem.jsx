@@ -12,9 +12,11 @@ const CartItem = ({ cartItem }) => {
   const handleAmount = (e) => {
     dispatch(editItem({ cartID, amount: parseInt(e.target.value) }));
   };
+  // console.log(cartItem);
+  
 
   const { cartID, title, price, image, amount, company, productColor } =
-    cartItem;
+    cartItem?.product || {};
 
   return (
     <article
@@ -25,7 +27,7 @@ const CartItem = ({ cartItem }) => {
       <img
         src={image}
         alt={title}
-        className='h-24 w-24 rounded-lg sm:h-32 sm:w-32 object-cover'
+        className='h-34 w-52 rounded-lg sm:h-32 sm:w-52 object-cover'
       />
       {/* INFO */}
       <div className='sm:ml-16 sm:w-48'>

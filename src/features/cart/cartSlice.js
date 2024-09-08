@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
+
 
 const defaultState = {
   cartItems: [],
@@ -9,6 +10,8 @@ const defaultState = {
   tax: 0,
   orderTotal: 0,
 };
+
+
 const getCartFromLocalStorage = () => {
   return JSON.parse(localStorage.getItem('cart')) || defaultState;
 };

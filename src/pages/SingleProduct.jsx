@@ -41,12 +41,12 @@ const productId = params.id
 useErrors([{isError, error}])
 
  const product = data?.product;
- console.log(product)
+ const colors = product?.colors || ['#000'];
 
   // const { image, title, price, description, colors, company } =
   //   product;
   const dollarsAmount = formatPrice(product?.price || 14000);
-  // const [productColor, setProductColor] = useState(colors[0]);
+  const [productColor, setProductColor] = useState(colors[0]);
   const [amount, setAmount] = useState(1);
 
   const handleAmount = (e) => {
@@ -60,16 +60,16 @@ useErrors([{isError, error}])
     title: product?.title,
     price: product?.price,
     company: product?.company?.name,
-    productColor: product?.colors,
-    // amount: product?.pr,
+    productColor: productColor,
+    amount,
   };
 
   const dispatch = useDispatch();
 
   const addToCart = () => {
     dispatch(addItem({ product: cartProduct || {} }));
+    
   };
-  // return <h1>HI</h1>
 
   return isLoading ? (
     <Loading />

@@ -6,27 +6,25 @@ import SectionTitle from '../components/SectionTitle';
 import CartTotals from '../components/CartTotals';
 import { useFetchUserCartQuery } from '../features/api';
 import { useErrors } from '../hooks/hook';
+import Loading from '../components/Loading';
 
 
 const Cart = () => {
   const user = useSelector((state) => state.userState.user);
   const {isError, error, data, refetch, isLoading} = useFetchUserCartQuery({token: user?.token});
   useErrors([{isError, error}])
-  console.log("data", data)
-
   const numItemsInCart = useSelector((state) => state.cartState.numItemsInCart);
 
   if (numItemsInCart === 0) {
     return <SectionTitle text='Your cart is empty' />;
   }
 
-
-  return (
+  return isLoading ? (<Loading/>) : (
     <>
       <SectionTitle text='Shopping Cart' />
       <div className='mt-8 grid gap-8 lg:grid-cols-12'>
         <div className='lg:col-span-8'>
-          <CartItemsList />
+          <CartItemsList data={data} />
         </div>
         <div className='lg:col-span-4 lg:pl-4'>
           <CartTotals />

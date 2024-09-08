@@ -21,7 +21,7 @@ const ProductsList = ({data}) => {
             <img
               src={image}
               alt={title}
-              className="h-24 w-24 rounded-lg sm:h-32 sm:w-32 object-cover group-hover:scale-105 transition duration-300"
+              className="h-15 w-25 rounded-lg sm:h-32 sm:w-52 object-cover group-hover:scale-105 transition duration-300"
             />
             <div className="ml-0 sm:ml-16">
               <h3 className="capitalize font-medium text-lg">{title}</h3>

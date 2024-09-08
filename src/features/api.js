@@ -6,7 +6,14 @@ const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${server}`,
   }),
-  tagTypes: ["Featured", "Products", "Categories", "Companies", "Cart", "SingleProduct"],
+  tagTypes: [
+    "Featured",
+    "Products",
+    "Categories",
+    "Companies",
+    "Cart",
+    "SingleProduct",
+  ],
   endpoints: (builder) => ({
     featuredProducts: builder.query({
       query: (flag) => ({
@@ -41,9 +48,9 @@ const api = createApi({
         url: "/api/v1/cart/",
         method: "POST",
         credentials: "include",
-        body: data
+        body: data,
       }),
-      providesTags: ["Cart"]
+      providesTags: ["Cart"],
     }),
 
     singleProduct: builder.query({
@@ -52,7 +59,26 @@ const api = createApi({
       }),
       keepUnusedDataFor: 0,
     }),
-    
+
+    updateUserCart: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/cart/updateitems",
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["Cart"],
+    }),
+
+    removeCartItem: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/v1/cart/removeitem/${id}`,
+        method: "DELETE",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["Cart"],
+    }),
   }),
 });
 
@@ -65,4 +91,6 @@ export const {
   useFetchCompaniesQuery,
   useFetchUserCartQuery,
   useSingleProductQuery,
+  useUpdateUserCartMutation,
+  useRemoveCartItemMutation,
 } = api;
