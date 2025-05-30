@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import Loading from "../components/Loading";
 import ThreeDynamics from "../components/ThreeDynamics";
+import { useNavigate } from "react-router-dom";
 
 // All available icons
 const floatingIcons = [
@@ -87,6 +88,8 @@ const About = () => {
     const timer = setTimeout(() => setPageLoading(false), 300);
     return () => clearTimeout(timer);
   }, []);
+
+  const navigate = useNavigate();
 
   return isPageLoading ? (
     <Loading />
@@ -219,7 +222,7 @@ const About = () => {
             shop. We aren't just another platform — we're your gateway to
             next-gen commerce.
           </p>
-          <button className="btn btn-primary btn-wide">Explore Nox Cart</button>
+          <button onClick={() => navigate("/")} className="btn btn-primary btn-wide">Explore Nox Cart</button>
         </div>
       </section>
     </div>

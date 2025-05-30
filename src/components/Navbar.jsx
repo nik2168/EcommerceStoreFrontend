@@ -25,6 +25,7 @@ const Navbar = () => {
           <NavLink
             to="/"
             className="hidden lg:flex shadow-lg flex-col text-3xl font-bold btn  bg-primary bg-opacity-40  btn-ghost text-content-300 tracking-wide"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <BsCart />
             Nox Cart

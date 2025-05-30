@@ -5,7 +5,6 @@ const ProductReviewSection = ({ product }) => {
   // Compute total ratings and star breakdown
 
   const ratingData = product?.ratingData || [];
-  console.log(ratingData)
   const totalRatings = ratingData.length;
   const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   let totalScore = 0;

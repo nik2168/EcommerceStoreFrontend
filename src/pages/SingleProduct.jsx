@@ -1,30 +1,30 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { BsCart3, BsStarFill } from "react-icons/bs";
-import { FaBuysellads, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
+import ProductReviewSection from "../components/Product/ProductReviewSection";
 import RecentViewed from "../components/RecentViewed";
-import RecommendedProducts from "../components/RecommendedProducts";
 import {
-  useFeaturedProductsQuery,
+  useFetchRecentSearchQuery,
+  useGetSingleProductRecommendationMutation,
   useSingleProductQuery,
   useUpdateUserCartMutation,
-  useUpdateUserInteractionsMutation,
+  useUpdateUserInteractionsMutation
 } from "../features/api";
 import { useAsyncMutation, useErrors } from "../hooks/hook";
 import { formatPrice, generateAmountOptions } from "../utils";
-import ProductReviewSection from "../components/Product/ProductReviewSection";
 
 const SingleProduct = () => {
   const { id: productId } = useParams();
-  const featured = useFeaturedProductsQuery(true);
   const { isError, error, data, isLoading } = useSingleProductQuery(productId);
+  const RecentSearched = useFetchRecentSearchQuery();
+
 
   useErrors([
     { isError, error },
-    { isError: featured?.isError, error: featured?.error },
+    { isError: RecentSearched?.isError, error: RecentSearched?.error},
   ]);
 
   const product = data?.product;
@@ -82,11 +82,27 @@ const SingleProduct = () => {
     });
   };
 
+  const [getRecommendation, isLoadingRecommendation, recommendationData] =
+    useAsyncMutation(useGetSingleProductRecommendationMutation, false);
+  useEffect(() => {
+ 
+    const fetchSingleRecommendation = async () => {
+    await getRecommendation("fetching recommendation ...", {productId});
+    };
+
+    fetchSingleRecommendation();
+  }, [productId]);
+
+
+
+
   const dollarsAmount = formatPrice(product?.price || 14000);
 
-  if (isLoading) return <Loading />;
+  if (isLoading || RecentSearched.isLoading) return <Loading />;
 
-  return (
+  return isLoadingRecommendation ? (
+    <Loading />
+  ) : (
     <section>
       {/* Breadcrumbs */}
       <div className="text-md breadcrumbs">
@@ -221,14 +237,23 @@ const SingleProduct = () => {
           </div>
         </div>
       </div>
-     < ProductReviewSection product={product} />
+      <ProductReviewSection product={product} />
       {/* EXTRA SECTIONS */}
-      <RecommendedProducts />
-      <RecentViewed />
+      {/* <RecommendedProducts
+        data={recommendationData}
+        isLoading={isLoadingRecommendation}
+      /> */}
+      <RecentViewed
+      title={"Recommendations"}
+        data={recommendationData}
+        isLoading={isLoadingRecommendation}
+      />
+         <RecentViewed
+              data={RecentSearched.data}
+              isLoading={RecentSearched.isLoading}
+            />
     </section>
   );
 };
 
 export default SingleProduct;
-
-

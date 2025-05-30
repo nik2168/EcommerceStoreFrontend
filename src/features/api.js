@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { server } from "./config";
 import { use } from "react";
+import { buildQueries } from "@testing-library/react";
 
 const api = createApi({
   reducerPath: "api",
@@ -315,6 +316,15 @@ const api = createApi({
         credentials: "include",
         body: body,
       }),
+    }),
+
+    getSingleProductRecommendation: builder.mutation({
+      query: (body) => ({
+        url: "api/v1/product/single/recommendation",
+        method: "PUT",
+        credentials: "include",
+        body: body,
+      }),
     })
 
   }),
@@ -361,4 +371,5 @@ export const {
   useTopSellingProductsUserQuery,
   useUpdateUserPreferencesMutation,
   useLazyFetchUserCartQuery,
+  useGetSingleProductRecommendationMutation,
 } = api;

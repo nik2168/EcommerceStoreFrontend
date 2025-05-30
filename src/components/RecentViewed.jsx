@@ -8,9 +8,8 @@ import { formatPrice } from "../utils";
 import Loading from "./Loading";
 import SectionTitle from "./SectionTitle";
 
-const RecentViewed = () => {
-  const { data, isError, isLoading, error } = useFetchRecentSearchQuery();
-  useErrors([{ isError, error }]);
+const RecentViewed = ({title = "Recently Viewed", data, isLoading}) => {
+  console.log(data)
 
   if (isLoading) return <Loading />;
 
@@ -20,7 +19,7 @@ const RecentViewed = () => {
 
   return (
     <section className="p-3 pb-6">
-      <SectionTitle text="Recently Viewed" />
+      <SectionTitle text={title}/>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pt-12 px-2 sm:px-4 lg:px-0">
         {products.map((product) => {
           const { _id, title, price, image, rating, ratingData = [] } = product;
