@@ -23,7 +23,7 @@ const CompaniesGrid = () => {
   }, [triggerFetchCompanies]);
 
   return (
-    <section className="mt-2 px-4">
+    <section className="my-3 px-4 backdrop-blur-lg">
       <div className="border-b border-base-300 pb-2 mb-1">
         <h2 className="text-3xl font-medium tracking-wide capitalize">
           Top Brands
@@ -31,7 +31,7 @@ const CompaniesGrid = () => {
       </div>
 
       <div className="flex overflow-x-auto gap-4 py-3 no-scrollbar">
-        {companyData.slice(0, 20).map((company) => (
+        {companyData.slice(0, companyData.length).map((company) => (
           <button
             key={company?.id}
             onClick={() =>
@@ -39,7 +39,7 @@ const CompaniesGrid = () => {
                 `/products?search=&category=all&company=${company?.name}&order=none&price=1000000&shipping=true`
               )
             }
-            className="flex-shrink-0 flex flex-col items-center bg-base-200 p-2 w-32 h-24 rounded-lg shadow hover:shadow-md transition duration-200 ease-in-out"
+            className="flex-shrink-0 flex flex-col items-center border border-base-300 rounded-lg bg-base-200 p-2 min-w-25 w-25 h-24 shadow hover:shadow-md transition duration-200 ease-in-out"
           >
             <img
               src={company?.image?.url}

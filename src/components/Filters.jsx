@@ -112,7 +112,7 @@ const Filters = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-base-200 rounded-md px-8 py-4 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center"
+      className="bg-base-200 border-2 border-base-300 p-1 rounded-lg  px-8 py-4 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center"
     >
       <FormInput
         type="search"

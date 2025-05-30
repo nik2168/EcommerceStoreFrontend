@@ -10,10 +10,10 @@ const RecommendedProducts = () => {
   useErrors([{ isError, error }]);
 
   return (
-    <section className="pt-14 px-4">
+    <section className="my-3 backdrop-blur-lg">
       <SectionTitle text="Recommended Products" />
-      <div className="mt-3 bg-base-200 rounded-3xl p-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 w-max">
+      <div className="mt-3  backdrop-blur-lg rounded-3xl p-4 overflow-x-auto no-scrollbar">
+        <div className="flex gap-2 md:gap-4 lg:gap-4 w-max pb-6">
           {data?.products?.map((product) => {
             const { _id, title, price, image, rating, ratingData } = product;
             const dollarsAmount = formatPrice(price);
@@ -22,18 +22,22 @@ const RecommendedProducts = () => {
               <Link
                 key={_id}
                 to={`/products/${_id}`}
-                className="group bg-base-100 shadow rounded-xl w-56 flex-shrink-0 hover:shadow-lg transition overflow-hidden"
+                className="group border-2 border-base-300 p-1 rounded-lg bg-base-200 shadow-md  w-[9rem] md:w-[12rem] lg:w-56 flex-shrink-0 hover:shadow-xl transition overflow-hidden"
               >
-                <div className="aspect-[4/3] overflow-hidden">
+                <div className="aspect-[4/3] md:p-1 lg:p-1 overflow-hidden">
                   <img
                     src={image.url}
                     alt={title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full rounded-lg md:w-full md:h-full lg:w-full lg:h-full object-cover transition-transform duration-300 group-hover:shadow-xl"
                   />
                 </div>
                 <div className="p-3 space-y-1">
-                  <h3 className="text-sm font-medium truncate">{title}</h3>
-                  <p className="text-primary font-semibold">{dollarsAmount}</p>
+                  <h3 className="text-xs md:text-sm lg:text-sm font-medium truncate">
+                    {title}
+                  </h3>
+                  <p className="text-primary text-xs md:text-sm lg:text-sm  font-semibold">
+                    {dollarsAmount}
+                  </p>
                   <div className="flex items-center gap-2">
                     <span
                       className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-white text-xs font-semibold ${

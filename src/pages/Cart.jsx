@@ -13,7 +13,9 @@ const Cart = () => {
   const data = useSelector((state) => state.cartState);
 
   if (numItemsInCart === 0) {
-    return <SectionTitle text="Your cart is empty" />;
+    return <section className="flex items-center justify-center pt-6">
+    <SectionTitle text="Your cart is empty" />;
+    </section>
   }
 
   return (

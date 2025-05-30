@@ -251,6 +251,7 @@ const SingleProduct = () => {
          <RecentViewed
               data={RecentSearched.data}
               isLoading={RecentSearched.isLoading}
+              isScrollable={false}
             />
     </section>
   );

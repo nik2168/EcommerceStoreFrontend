@@ -20,8 +20,9 @@ const Checkout = () => {
 
   const cartTotal = useSelector((state) => state.cartState.cartTotal);
   if (cartTotal === 0) {
-    return <SectionTitle text='Your cart is empty' />;
-  }
+return <section className="flex items-center justify-center pt-6">
+  <SectionTitle text="Your cart is empty" />;
+</section>;  }
   return (
     <>
       <SectionTitle text='place your order' />
