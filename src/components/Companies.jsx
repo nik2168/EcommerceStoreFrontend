@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLazyFetchCompaniesQuery } from "../features/api";
 import { useNavigate } from "react-router-dom";
+import SectionTitle from "./SectionTitle";
 
 const CompaniesGrid = () => {
   const navigate = useNavigate();
@@ -23,12 +24,14 @@ const CompaniesGrid = () => {
   }, [triggerFetchCompanies]);
 
   return (
-    <section className="my-3 px-4 backdrop-blur-lg">
-      <div className="border-b border-base-300 pb-2 mb-1">
+    <section className="my-3 mt-5 px-4 backdrop-blur-lg">
+      {/* <div className="border-b border-base-300 pb-2 mb-1">
         <h2 className="text-3xl font-medium tracking-wide capitalize">
           Top Brands
         </h2>
-      </div>
+      </div> */}
+            <SectionTitle text={"Top Brands"} />
+      
 
       <div className="flex overflow-x-auto gap-4 py-3 no-scrollbar">
         {companyData.slice(0, companyData.length).map((company) => (
