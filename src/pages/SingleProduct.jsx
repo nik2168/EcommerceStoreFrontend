@@ -116,7 +116,7 @@ const SingleProduct = () => {
         </ul>
       </div>
       {/* PRODUCT MAIN */}
-      <div className="mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16">
+      <div className="mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16 backdrop-blur-[50px]  pb-6 px-6">
         {/* IMAGE SLIDER */}
         <div className="relative w-full lg:h-[36rem] md:h-[24rem] h-[20rem] overflow-hidden rounded-xl shadow-xl">
           {allImages.length > 0 && (
@@ -147,7 +147,7 @@ const SingleProduct = () => {
         </div>
 
         {/* PRODUCT INFO */}
-        <div>
+        <div className="flex flex-col ">
           <h1 className="capitalize text-3xl font-bold">{product?.title}</h1>
 
           {/* RATING */}
@@ -238,21 +238,17 @@ const SingleProduct = () => {
         </div>
       </div>
       <ProductReviewSection product={product} />
-      {/* EXTRA SECTIONS */}
-      {/* <RecommendedProducts
-        data={recommendationData}
-        isLoading={isLoadingRecommendation}
-      /> */}
+
       <RecentViewed
-      title={"Recommendations"}
+        title={"Recommendations"}
         data={recommendationData}
         isLoading={isLoadingRecommendation}
       />
-         <RecentViewed
-              data={RecentSearched.data}
-              isLoading={RecentSearched.isLoading}
-              isScrollable={false}
-            />
+      <RecentViewed
+        data={RecentSearched.data}
+        isLoading={RecentSearched.isLoading}
+        isScrollable={false}
+      />
     </section>
   );
 };

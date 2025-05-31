@@ -8,7 +8,7 @@ const ProductsGrid = ({ data }) => {
 
 
   return (
-    <div className="pt-6  grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 bg-base-100">
+    <div className="pt-6  grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 ">
       {products?.map((product) => {
         const { title, price, image, rating, ratingData } = product;
         const dollarsAmount = formatPrice(price);
@@ -16,7 +16,7 @@ const ProductsGrid = ({ data }) => {
           <Link
             key={product._id}
             to={`/products/${product._id}`}
-            className="card w-full shadow-xl bg-base-200 hover:shadow-2xl transition duration-300"
+            className="card w-full shadow-xl border border-base-300 rounded-lg   backdrop-blur-[50px] hover:shadow-2xl transition duration-300"
           >
             <figure className="px-4 pt-4">
               <img

@@ -16,7 +16,7 @@ const TopSellingProduct = () => {
   const products = data?.sortedProductsData || [];
 
   return (
-    <section className="px-4 py-8 md:px-8 lg:px-12 xl:px-16 backdrop-blur-lg">
+    <section className="px-4 py-8 md:px-8 lg:px-12 xl:px-16 backdrop-blur-lg ">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-8 text-base-content tracking-tight">
         Top Selling Products
       </h2>
@@ -26,7 +26,7 @@ const TopSellingProduct = () => {
           <div
             key={product._id}
             onClick={() => navigate(`/products/${product._id}`)}
-            className="cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-base-200 bg-base-100"
+            className="cursor-pointer rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-200 backdrop-blur-[50px] "
           >
             <div className="w-full aspect-[4/3] overflow-hidden">
               <img

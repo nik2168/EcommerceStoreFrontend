@@ -18,7 +18,7 @@ const RecentViewed = ({
   if (!products?.length) return null;
 
   return (
-    <section className="my-6 backdrop-blur-lg">
+    <section className="my-3 backdrop-blur-lg ">
       <SectionTitle text={title} />
       <div
         className={` backdrop-blur-lg rounded-3xl p-4 ${

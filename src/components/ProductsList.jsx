@@ -9,7 +9,7 @@ const ProductsList = ({data}) => {
   const products = data;
 
   return (
-    <div className='mt-8 grid gap-y-4'>
+    <div className='mt-8 grid gap-y-3'>
       {products.map((product) => {
         const { title, price, image, company, description } = product;
         const dollarsAmount = formatPrice(price);
@@ -18,7 +18,7 @@ const ProductsList = ({data}) => {
           <Link
             key={product._id}
             to={`/products/${product._id}`}
-            className="p-2 md:p-2 lg:p-3 w-full border-2 border-base-300  rounded-lg bg-base-200 flex flex-row gap-y-4  shadow-xl hover:shadow-2xl duration-300 "
+            className="p-2 md:p-4 lg:p-4 w-full border-2 border-base-300  rounded-lg backdrop-blur-[50px] flex flex-row gap-y-4  shadow-xl hover:shadow-2xl duration-300 "
           >
             <div className="md:w-[40%] lg:w-[20%] mr-3 h-auto">
               <img

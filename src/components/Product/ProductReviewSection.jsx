@@ -25,7 +25,7 @@ const ProductReviewSection = ({ product }) => {
   const latestReviews = ratingData
 
   return (
-    <div className="p-6 bg-base-200 max-w-6xl mx-auto rounded-2xl mt-6 shadow-md">
+    <div className="p-6 backdrop-blur-[50px]  max-w-6xl mx-auto rounded-2xl mt-3 shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Ratings & Reviews</h2>
 
       <div className="flex items-center space-x-4">
@@ -56,7 +56,10 @@ const ProductReviewSection = ({ product }) => {
 
       <div className="space-y-4 mt-6">
         {latestReviews?.map((review, i) => (
-          <div key={i} className="p-4 border rounded-xl bg-base-100">
+          <div
+            key={i}
+            className="p-4 border border-base-300 rounded-lg bg-base-200"
+          >
             <div className="flex items-center text-green-600 font-semibold">
               <div
                 className={`flex items-center py-1 px-3 gap-1 rounded-md ${
@@ -75,8 +78,6 @@ const ProductReviewSection = ({ product }) => {
             {review?.message && (
               <p className="text-base-content my-2">{review.message}</p>
             )}
-
-          
           </div>
         ))}
       </div>
