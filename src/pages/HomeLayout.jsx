@@ -60,7 +60,7 @@ const FloatingIcon = ({ Icon, style, scrollY, index }) => {
         position: "absolute",
         color: "teal",
         opacity: 0.9,
-        filter: "blur6px)",
+        filter: "blur(6px)",
         transform: `translateY(${translateY}px) rotate(${style.rotate}deg)`,
         transition: "transform 0.1s linear",
         ...style,
