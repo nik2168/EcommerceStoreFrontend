@@ -4,6 +4,9 @@ import { NavLink } from "react-router-dom";
 import NavLinks from "./NavLinks";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../features/user/userSlice";
+import faceId from "../assets/faceId.json"
+import Lottie from "react-lottie-player";
+
 
 const Navbar = () => {
 
@@ -70,8 +73,8 @@ const Navbar = () => {
         </div>
 
         {/* END */}
-        <div className="navbar-end gap-2 ">
-          <div className="group flex items-center transition-all duration-500 z-10 cursor-pointer justify-center space-x-1 shadow-md p-[10px] bg-primary bg-opacity-40 rounded-full relative">
+        <div className="navbar-end gap-2 relative">
+          <div className="group flex items-center transition-all duration-1000 z-10 cursor-pointer justify-center space-x-1  p-[10px] rounded-full absolute right-[75%] md:right-[50%] lg:right-[50%]">
             <span className="relative flex h-2 w-2 md:h-3 md:w-3 lg:h-3 lg:w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 lg:h-3 lg:w-3 bg-green-500"></span>
@@ -81,24 +84,30 @@ const Navbar = () => {
             </p>
 
             {/* Hoverable name list */}
-          {user?.role === "admin" &&  <div
+            <div
               id="users-name"
-              className="hidden group-hover:flex absolute top-[3.5rem] left-0 z-10 flex-col gap-1 items-start bg-primary bg-opacity-45 shadow-lg transition-all duration-300 p-3 rounded-lg w-max"
+              className=" group-hover:flex justify-center items-center group-hover:w-[12rem] group-hover:h-[12rem]  h-[2.3rem] md:h-[2.5rem] lg:h-[2.5rem] top-0  absolute  z-[-1] flex-col gap-1  bg-primary bg-opacity-40 shadow-lg transition-all duration-1000 p-3 rounded-3xl group-hover:rounded-3xl w-[6rem] md:w-[6rem] lg:w-[6rem] backdrop-blur-lg"
             >
-              {onlineUsers?.map((usr) => (
-                <p
-                  key={usr.id}
-                  className="text-[0.7rem]  font-normal text-base-100 whitespace-nowrap"
-                >
-                  {usr.name}{" "}
-                  {usr.role === "admin" && (
-                    <span className="ml-1  text-red-400">
-                      (Admin)
-                    </span>
-                  )}
-                </p>
-              ))}
-            </div>}
+              <div className="flex-col items-start justify-center space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 group-hover:delay-[900ms] delay-[0ms]">
+                {onlineUsers?.map((usr, index) => (
+                  <div
+                    key={usr.id}
+                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary backdrop-blur-md text-white shadow-lg transform transition-all duration-500 ease-out opacity-0 translate-y-5 group-hover:opacity-100 group-hover:translate-y-0"
+                    style={{
+                      transitionDelay: `calc(${index * 100}ms + 900ms)`,
+                    }}
+                  >
+                    <span className="text-[0.7rem] md:text-[0.7rem] lg:text-[0.7rem] font-medium">{usr.name}</span>
+
+                    {usr.role === "admin" && (
+                      <span className="text-xs font-semibold text-green-400  px-2 py-[2px] rounded-full">
+                       Admin
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Theme toggle wrapped with dark translucent bg */}
