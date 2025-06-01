@@ -32,13 +32,13 @@ const navigate = useNavigate();
 
 
   return (
-    <section className="h-auto overflow-y-auto  p-2 border-t-4 border-base-100  mb-6">
+    <section className="h-auto overflow-y-auto   border-t-4 border-base-100  ">
       {/* <div className="border-b border-base-300 pb-0">
         <h2 className="text-3xl font-medium tracking-wider capitalize">
           Shop By Category
         </h2>
       </div> */}
-      <div className="flex  md:justify-center lg:justify-center overflow-x-auto gap-3  no-scrollbar">
+      <div className="flex  md:justify-center lg:justify-center overflow-x-auto gap-3 p-2 pb-6  no-scrollbar">
         {categoryData?.slice(1, categoryData.length).map((category) => (
           <button
             onClick={() =>
@@ -47,14 +47,14 @@ const navigate = useNavigate();
               )
             }
             key={category._id}
-            className="flex flex-col min-w-[5rem] sm:min-w-[6rem] items-center hover:cursor-pointer justify-center border border-base-300 rounded-lg bg-base-200 p-2 shadow hover:shadow-md transition"
+            className="flex flex-col min-w-[5rem] sm:min-w-[6rem] items-center hover:cursor-pointer justify-center border border-base-300 rounded-lg bg-base-200 p-2 shadow-md hover:shadow-lg transition"
           >
             <img
               src={category.image.url}
               alt={category.name}
               className="w-[4rem] md:w-[5rem] lg:w-[5rem] h-[3rem] md:h-[4rem] lg:h-[4rem] object-cover rounded-md mb-2"
             />
-            <span className="text-[0.7rem] text-center font-semibold">
+            <span className="text-[0.7rem] capitalize text-center font-semibold">
               {category.name}
             </span>
           </button>

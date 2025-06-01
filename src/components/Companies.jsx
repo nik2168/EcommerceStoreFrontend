@@ -30,8 +30,7 @@ const CompaniesGrid = () => {
           Top Brands
         </h2>
       </div> */}
-            <SectionTitle text={"Top Brands"} />
-      
+      <SectionTitle text={"Top Brands"} />
 
       <div className="flex overflow-x-auto gap-4 py-3 no-scrollbar">
         {companyData.slice(0, companyData.length).map((company) => (
@@ -42,14 +41,14 @@ const CompaniesGrid = () => {
                 `/products?search=&category=all&company=${company?.name}&order=none&price=1000000&shipping=true`
               )
             }
-            className="flex-shrink-0 flex flex-col items-center border border-base-300 rounded-lg bg-base-200 p-2 min-w-25 w-25 h-24 shadow hover:shadow-md transition duration-200 ease-in-out"
+            className="flex-shrink-0 flex flex-col items-center border shadow-md  border-base-300 rounded-lg bg-base-200 p-2 min-w-25 w-25 h-24  hover:shadow-lg  transition duration-200 ease-in-out"
           >
             <img
               src={company?.image?.url}
               alt={company?.name}
               className="w-16 h-12 object-cover rounded-md mb-2"
             />
-            <span className="text-xs font-semibold text-center">
+            <span className="text-xs font-semibold capitalize text-center">
               {company?.name}
             </span>
           </button>

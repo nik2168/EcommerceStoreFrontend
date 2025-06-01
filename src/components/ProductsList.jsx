@@ -29,7 +29,7 @@ const ProductsList = ({data}) => {
             </div>
 
             <div className="ml-0 s w-[30%] md:w-[60%] lg:w-[60%] h-[9rem] ">
-              <h3 className="capitalize font-medium text-sm md:text-lg lg:text-lg">
+              <h3 className="capitalize font-medium text-sm md:text-lg  lg:text-lg">
                 {title}
               </h3>
               <div className="flex flex-row justify-start mt-3  items-center">
@@ -48,7 +48,7 @@ const ProductsList = ({data}) => {
                   {product?.ratingData?.length} ratings
                 </p>
               </div>
-              <h4 className="capitalize text-md font-bold my-3 text-neutral-heading">
+              <h4 className="capitalize text-md font-bold my-3  text-neutral-heading">
                 {company.name}
               </h4>
               <div className="md:visible lg:visible invisible">

@@ -151,7 +151,9 @@ const SingleProduct = () => {
 
         {/* PRODUCT INFO */}
         <div className="flex flex-col ">
-          <h1 className="capitalize text-3xl font-bold">{product?.title}</h1>
+          <h1 className="capitalize text-3xl font-bold capitalize">
+            {product?.title}
+          </h1>
 
           {/* RATING */}
           <div className="flex flex-row justify-start my-2 items-center">
@@ -178,7 +180,7 @@ const SingleProduct = () => {
             24 months Cost EMI Plan with Nox-Bank Credit Card
           </p>
           <h4 className="text-xl text-neutral-content font-bold mt-2">
-            <span className="text-sm font-light">a product by </span>
+            <span className="text-sm font-light capitalize">a product by </span>
             {product?.company?.name}
           </h4>
           <p className="mt-3 text-xl text-primary font-bold">

@@ -37,12 +37,12 @@ const TopSellingProduct = () => {
             </div>
 
             <div className="p-4 space-y-1">
-              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-base-content line-clamp-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-base-content capitalize line-clamp-2">
                 {product.title}
               </h3>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-xs text-base-content/60 font-semibold">
+                <span className="text-xs text-base-content/60 font-semibold capitalize">
                   {product.company?.name}
                 </span>
                 <span

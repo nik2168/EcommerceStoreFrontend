@@ -53,7 +53,7 @@ const RecentViewed = ({
                   />
                 </div>
                 <div className="p-3 space-y-1">
-                  <h3 className="text-xs md:text-sm lg:text-sm font-medium truncate">
+                  <h3 className="text-xs md:text-sm lg:text-sm font-medium truncate capitalize">
                     {title}
                   </h3>
                   <p className="text-primary text-xs md:text-sm lg:text-sm font-semibold">
