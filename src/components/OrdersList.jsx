@@ -295,7 +295,7 @@ export default function PaymentSuccess() {
                             )}
 
                             <div className="gap-6 flex">
-                             {isEditMode ? <button
+                             {isEditMode || !item?.review ? <button
                                 className="btn btn-sm btn-primary self-end sm:self-auto"
                                 type="button"
                                 onClick={() =>
