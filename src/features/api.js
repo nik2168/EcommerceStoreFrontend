@@ -277,7 +277,7 @@ const api = createApi({
 
     fetchRecentSearch: builder.query({
       query: () => ({
-        url: "/api/v1/user/recent/search",
+        url: `/api/v1/user/recent/search`,
         method: "GET",
         credentials: "include",
       }),
@@ -285,8 +285,8 @@ const api = createApi({
     }),
 
     recommendedProducts: builder.query({
-      query: () => ({
-        url: "/api/v1/product/recommendations",
+      query: (id) => ({
+        url: `/api/v1/product/recommendations`,
         method: "GET",
         credentials: "include",
       }),
@@ -324,6 +324,22 @@ const api = createApi({
         method: "PUT",
         credentials: "include",
         body: body,
+      }),
+    }),
+
+    getTopRatingProduct: builder.query({
+      query: () => ({
+        url: "api/v1/product/toprating/products",
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+
+    getFashionProducts: builder.query({
+      query: () => ({
+        url: "api/v1/product/fashion/products",
+        method: "GET",
+        credentials: "include",
       }),
     })
 
@@ -372,4 +388,6 @@ export const {
   useUpdateUserPreferencesMutation,
   useLazyFetchUserCartQuery,
   useGetSingleProductRecommendationMutation,
+  useGetTopRatingProductQuery,
+  useGetFashionProductsQuery
 } = api;

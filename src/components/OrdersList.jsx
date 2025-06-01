@@ -295,7 +295,7 @@ export default function PaymentSuccess() {
                             )}
 
                             <div className="gap-6 flex">
-                              <button
+                             {isEditMode ? <button
                                 className="btn btn-sm btn-primary self-end sm:self-auto"
                                 type="button"
                                 onClick={() =>
@@ -303,14 +303,15 @@ export default function PaymentSuccess() {
                                 }
                               >
                                 Submit
-                              </button>
+                              </button> 
+                              :
                               <button
                                 className="btn btn-sm btn-primary self-end sm:self-auto"
                                 type="button"
                                 onClick={() => setEditMode((pre) => !pre)}
                               >
                                 Edit
-                              </button>
+                              </button>}
                             </div>
                           </div>
                         </div>

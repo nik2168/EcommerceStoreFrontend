@@ -36,7 +36,7 @@ const CompaniesGrid = () => {
       <div className="flex overflow-x-auto gap-4 py-3 no-scrollbar">
         {companyData.slice(0, companyData.length).map((company) => (
           <button
-            key={company?.id}
+            key={company?._id}
             onClick={() =>
               navigate(
                 `/products?search=&category=all&company=${company?.name}&order=none&price=1000000&shipping=true`

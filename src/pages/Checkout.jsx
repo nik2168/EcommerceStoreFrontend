@@ -20,13 +20,13 @@ const Checkout = () => {
 
   const cartTotal = useSelector((state) => state.cartState.cartTotal);
   if (cartTotal === 0) {
-return <section className="flex items-center justify-center pt-6">
+return <section className="flex items-center justify-center pt-6 backdrop-blur-[50px]">
   <SectionTitle text="Your cart is empty" />;
 </section>;  }
   return (
     <>
-      <SectionTitle text='place your order' />
-      <div className='mt-8 grid gap-8 md:grid-cols-2 items-start'>
+      <SectionTitle text="place your order" />
+      <div className="mt-8 grid gap-8 md:grid-cols-2 items-start backdrop-blur-[50px] p-6 shadow-lg">
         <CheckoutForm />
         <CartTotals />
       </div>

@@ -46,7 +46,7 @@ const navigate = useNavigate();
                 `/products?search=&category=${category?.name}&company=all&order=none&price=1000000&shipping=true`
               )
             }
-            key={category.id}
+            key={category._id}
             className="flex flex-col min-w-[5rem] sm:min-w-[6rem] items-center hover:cursor-pointer justify-center border border-base-300 rounded-lg bg-base-200 p-2 shadow hover:shadow-md transition"
           >
             <img

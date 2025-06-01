@@ -2,12 +2,19 @@ import { Link } from "react-router-dom";
 import { formatPrice } from "../utils";
 import { BsStarFill } from "react-icons/bs";
 import SectionTitle from "./SectionTitle";
-import { useRecommendedProductsQuery } from "../features/api";
+import { useGetTopRatingProductQuery, useRecommendedProductsQuery } from "../features/api";
 import { useErrors } from "../hooks/hook";
+import { useSelector } from "react-redux";
 
 const RecommendedProducts = () => {
-  const { data, error, isError } = useRecommendedProductsQuery();
+  const {user} = useSelector((state) => state.userState)
+  const { data, error, isError } = user
+    ? useRecommendedProductsQuery()
+    : useGetTopRatingProductQuery();
+
   useErrors([{ isError, error }]);
+
+  
 
   return (
     <section className="my-3 backdrop-blur-lg">

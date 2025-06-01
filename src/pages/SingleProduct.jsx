@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { BsCart3, BsStarFill } from "react-icons/bs";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import ProductReviewSection from "../components/Product/ProductReviewSection";
 import RecentViewed from "../components/RecentViewed";
 import {
   useFetchRecentSearchQuery,
+  useGetFashionProductsQuery,
   useGetSingleProductRecommendationMutation,
   useSingleProductQuery,
   useUpdateUserCartMutation,
@@ -17,10 +18,12 @@ import { useAsyncMutation, useErrors } from "../hooks/hook";
 import { formatPrice, generateAmountOptions } from "../utils";
 
 const SingleProduct = () => {
+  const {user} = useSelector((state) => state.userState);
   const { id: productId } = useParams();
   const { isError, error, data, isLoading } = useSingleProductQuery(productId);
-  const RecentSearched = useFetchRecentSearchQuery();
-
+ const RecentSearched = user
+   ? useFetchRecentSearchQuery()
+   : useGetFashionProductsQuery();
 
   useErrors([
     { isError, error },

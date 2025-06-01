@@ -20,8 +20,8 @@ const Cart = () => {
 
   return (
     <>
-      <SectionTitle text="Shopping Cart" />
-      <div className="mt-8 grid gap-8 lg:grid-cols-12">
+      <SectionTitle text="Shopping Cart " />
+      <div className="mt-8 grid gap-8 lg:grid-cols-12 backdrop-blur-[50px] p-3 border-2 shadow-lg border-base-200">
         <div className="lg:col-span-8">
           <CartItemsList data={data} />
         </div>
