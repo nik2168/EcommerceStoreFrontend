@@ -5,6 +5,7 @@ import { BsStarFill } from "react-icons/bs";
 import { formatPrice } from "../utils";
 import Loading from "./Loading";
 import SectionTitle from "./SectionTitle";
+import { useSelector } from "react-redux";
 
 const RecentViewed = ({
   title = "Recently Viewed",
@@ -12,6 +13,8 @@ const RecentViewed = ({
   isLoading,
   isScrollable = true,
 }) => {
+
+  const { user } = useSelector((state) => state.userState);
   if (isLoading) return <Loading />;
 
   const products = data?.products?.slice(0, 12);
@@ -19,7 +22,7 @@ const RecentViewed = ({
 
   return (
     <section className="my-3 backdrop-blur-lg ">
-      <SectionTitle text={title} />
+      <SectionTitle text={user ? title : "Trending In Fashion"} />
       <div
         className={` backdrop-blur-lg rounded-3xl p-4 ${
           isScrollable ? "overflow-x-auto no-scrollbar" : ""
