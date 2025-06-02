@@ -75,9 +75,9 @@ const Header = () => {
           >
             <Bars3Icon className="h-5 inline-block w-5" />
           </label>
-          <h1 className="text-2xl font-semibold ml-2">{pageTitle}</h1>
+          <h1 className="text-md md:text-xl hidden md:flex lg:flex  lg:text-2xl font-semibold ml-2">{pageTitle}</h1>
 
-          <div className="group flex items-center transition-all duration-1000 z-10 cursor-pointer justify-center space-x-1  p-[10px] rounded-full absolute right-[75%] md:right-[50%] lg:right-[50%]">
+          <div className="group flex items-center transition-all duration-1000 z-10 cursor-pointer justify-center space-x-1  p-[10px] rounded-full absolute right-[50%] md:right-[50%] lg:right-[50%]">
             <span className="relative flex h-2 w-2 md:h-3 md:w-3 lg:h-3 lg:w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 lg:h-3 lg:w-3 bg-green-500"></span>
@@ -131,7 +131,7 @@ const Header = () => {
           {/* Light and dark theme selection toogle **/}
           <label className="swap ">
             <input type="checkbox" />
-            {theme === "dracula" ? (
+            {theme === "dark" ? (
               <SunIcon
                 //   data-set-theme="light"
                 data-act-class="ACTIVECLASS"
