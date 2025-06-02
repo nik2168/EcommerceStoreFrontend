@@ -22,7 +22,6 @@ const RecommendedProducts = lazy(() =>
 const TopSellingProduct = lazy(() => import("../components/TopSellingProduct"));
 
 const Landing = () => {
-
   const { user } = useSelector((state) => state.userState);
   const { isLoading, data, isError, error } = useFeaturedProductsQuery(true);
   const recentSearch = user
@@ -37,10 +36,7 @@ const Landing = () => {
       isError: recommendedProducts?.isError,
       error: recommendedProducts?.error,
     },
-
   ]);
-
-
 
   if (isLoading) return <Loading />;
 
@@ -55,6 +51,8 @@ const Landing = () => {
         <RecentViewed
           data={recentSearch.data}
           isLoading={recentSearch.isLoading}
+          title={user ? "Recent Search" : "Fashion Products"}
+          isScrollable={false}
         />
       </Suspense>
     </>

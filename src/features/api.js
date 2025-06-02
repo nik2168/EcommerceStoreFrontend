@@ -322,7 +322,6 @@ const api = createApi({
       query: (body) => ({
         url: "api/v1/product/single/recommendation",
         method: "PUT",
-        credentials: "include",
         body: body,
       }),
     }),

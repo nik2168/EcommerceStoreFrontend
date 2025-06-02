@@ -98,7 +98,6 @@ const SingleProduct = () => {
 
 
 
-
   const dollarsAmount = formatPrice(product?.price || 14000);
 
   if (isLoading || RecentSearched.isLoading) return <Loading />;
@@ -151,7 +150,7 @@ const SingleProduct = () => {
 
         {/* PRODUCT INFO */}
         <div className="flex flex-col ">
-          <h1 className="capitalize text-3xl font-bold capitalize">
+          <h1 className="capitalize text-3xl font-bold ">
             {product?.title}
           </h1>
 
@@ -253,6 +252,7 @@ const SingleProduct = () => {
         data={RecentSearched.data}
         isLoading={RecentSearched.isLoading}
         isScrollable={false}
+        title={user ? "Recently Searched" : "Trending In Fashion"}
       />
     </section>
   );

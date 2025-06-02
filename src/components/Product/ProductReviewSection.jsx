@@ -55,7 +55,7 @@ const ProductReviewSection = ({ product }) => {
       </div>
 
       <div className="space-y-4 mt-6">
-        {latestReviews?.map((review, i) => (
+        {latestReviews?.slice(0,6).map((review, i) => (
           <div
             key={i}
             className="p-4 border border-base-300 rounded-lg bg-base-200"

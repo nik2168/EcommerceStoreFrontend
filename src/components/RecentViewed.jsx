@@ -22,7 +22,7 @@ const RecentViewed = ({
 
   return (
     <section className="my-3 backdrop-blur-lg ">
-      <SectionTitle text={user ? title : "Trending In Fashion"} />
+      <SectionTitle text={ title} />
       <div
         className={` backdrop-blur-lg rounded-3xl p-4 ${
           isScrollable ? "overflow-x-auto no-scrollbar" : ""
