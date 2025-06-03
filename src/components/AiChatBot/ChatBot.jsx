@@ -11,6 +11,7 @@ import {
 } from "../../utils/events";
 import { loginUser, logoutUser, setOnlineUsers } from "../../features/user/userSlice";
 import axios from "axios";
+import useSocket from "../../utils/socket";
 
 
 const Chatbot = () => {
@@ -73,30 +74,31 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const socket = useRef(null); // keep socket instance here
-  useEffect(() => {
-    // 1. Connect to socket server (adjust URL as needed)
-    socket.current = io(server, {
-      transports: ["websocket"], // optional, more stable
-      withCredentials: true, // optional if needed for cookies
-    });
+  // const socket = useRef(null); // keep socket instance here
+  // useEffect(() => {
+  //   // 1. Connect to socket server (adjust URL as needed)
+  //   socket.current = io(server, {
+  //     transports: ["websocket"], // optional, more stable
+  //     withCredentials: true, // optional if needed for cookies
+  //   });
 
-    // 2. Listen to events
-    socket.current.on("connect", () => {
-      console.log("Socket connected:", socket.current.id);
-    });
+  //   // 2. Listen to events
+  //   socket.current.on("connect", () => {
+  //     console.log("Socket connected:", socket.current.id);
+  //   });
 
 
-    socket.current.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+  //   socket.current.on("disconnect", () => {
+  //     console.log("Socket disconnected");
+  //   });
 
-    // 3. Clean up on unmount
-    return () => {
-      socket.current.disconnect();
-    };
-  }, []);
+  //   // 3. Clean up on unmount
+  //   return () => {
+  //     socket.current.disconnect();
+  //   };
+  // }, []);
 
+  const socket = useSocket();
 
   const onSubmitAction = (e) => {
     e.preventDefault();

@@ -20,10 +20,11 @@ import { formatPrice, generateAmountOptions } from "../utils";
 const SingleProduct = () => {
   const {user} = useSelector((state) => state.userState);
   const { id: productId } = useParams();
-  const { isError, error, data, isLoading } = useSingleProductQuery(productId);
+  const { isError, error, data, isLoading, refetch } = useSingleProductQuery(productId);
  const RecentSearched = user
    ? useFetchRecentSearchQuery()
    : useGetFashionProductsQuery();
+
 
   useErrors([
     { isError, error },
@@ -41,6 +42,7 @@ const SingleProduct = () => {
     useUpdateUserInteractionsMutation,
     false
   );
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -241,7 +243,7 @@ const SingleProduct = () => {
           </div>
         </div>
       </div>
-      <ProductReviewSection product={product} />
+      <ProductReviewSection product={product} refetch={refetch} />
 
       <RecentViewed
         title={"Recommendations"}
