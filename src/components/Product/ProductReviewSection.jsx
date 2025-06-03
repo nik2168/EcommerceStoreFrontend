@@ -6,7 +6,7 @@ import {
   BiSolidDislike,
   BiSolidLike,
 } from "react-icons/bi";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import useSocket from "../../utils/socket";
 import { useSocketEvents } from "../../hooks/hook";
@@ -15,6 +15,8 @@ import {
   REVIEW_LIKES,
   REVIEW_REPLY,
 } from "../../utils/events";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const ProductReviewSection = ({ product, refetch }) => {
   const [productData, setProductData] = useState(product);
@@ -25,13 +27,28 @@ const ProductReviewSection = ({ product, refetch }) => {
 
   const socket = useSocket();
   const { user } = useSelector((state) => state.userState);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setProductData(product);
   }, [product]);
 
+  const isUserLoggedIn = () => {
+    if (!user) {
+      toast.error("Please login to continue.");
+      navigate("/login");
+      return false;
+    }
+    return true;
+  };
+
+  const emitSocketEvent = (event, payload) => {
+    socket?.current?.emit(event, payload);
+  };
+
   const likeReviewHandler = (reviewId) => {
-    socket?.current?.emit(REVIEW_LIKES, {
+    if (!isUserLoggedIn()) return;
+    emitSocketEvent(REVIEW_LIKES, {
       productId: productData._id,
       reviewId,
       userId: user._id,
@@ -39,18 +56,19 @@ const ProductReviewSection = ({ product, refetch }) => {
   };
 
   const dislikeReviewHandler = (reviewId) => {
-    socket?.current?.emit(REVIEW_DISLIKES, {
+    if (!isUserLoggedIn()) return;
+    emitSocketEvent(REVIEW_DISLIKES, {
       productId: productData._id,
       reviewId,
       userId: user._id,
     });
   };
 
-  // New reply submission
   const submitReplyHandler = () => {
+    if (!isUserLoggedIn()) return;
     if (!replyText.trim()) return alert("Reply cannot be empty");
 
-    socket?.current?.emit(REVIEW_REPLY, {
+    emitSocketEvent(REVIEW_REPLY, {
       productId: productData._id,
       reviewId: replyingToReviewId,
       userId: user._id,
@@ -61,17 +79,45 @@ const ProductReviewSection = ({ product, refetch }) => {
     setIsReplyModalOpen(false);
   };
 
-  const reviewLikesHandler = useCallback(() => {
-    refetch();
-  }, [user?._id]);
+  const reviewLikesHandler = useCallback(
+    ({ productId, newData, reviewId, userId }) => {
+      setProductData((prev) => {
+        const cloned = structuredClone(prev); // or use deep clone below
+        const review = cloned.ratingData.find(
+          (r) => r._id.toString() === reviewId
+        );
+        review.likes = newData;
+        return cloned;
+      });
+    },
+    []
+  );
 
-  const reviewDislikesHandler = useCallback(() => {
-    refetch();
-  }, [user?._id]);
+  const reviewDislikesHandler = useCallback(
+    ({ productId, newData, reviewId, userId }) => {
+      setProductData((prev) => {
+        const cloned = structuredClone(prev); // or use deep clone below
+        const review = cloned.ratingData.find(
+          (r) => r._id.toString() === reviewId
+        );
+        review.dislikes = newData;
+        return cloned;
+      });
+    },
+    []
+  );
 
-  const reviewReplyHandler = useCallback(() => {
-    refetch();
-  }, [user?._id]);
+  const reviewReplyHandler = useCallback(({ reviewId, newData, productId }) => {
+    // console.log(newData)
+    setProductData((prev) => {
+      const cloned = structuredClone(prev); // or use deep clone below
+      const review = cloned.ratingData.find(
+        (r) => r._id.toString() === reviewId
+      );
+      review.replies = newData;
+      return cloned;
+    });
+  }, []);
 
   useSocketEvents(socket?.current, {
     [REVIEW_LIKES]: reviewLikesHandler,
@@ -80,33 +126,43 @@ const ProductReviewSection = ({ product, refetch }) => {
   });
 
   const ratingData = productData?.ratingData || [];
-  const totalRatings = ratingData.length;
-  const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  let totalScore = 0;
+  const starStats = useMemo(() => {
+    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let score = 0;
 
-  ratingData.forEach(({ rating }) => {
-    totalScore += rating;
-    const rounded = Math.round(rating);
-    if (starCounts[rounded] !== undefined) starCounts[rounded]++;
-  });
+    ratingData.forEach(({ rating }) => {
+      const rounded = Math.round(rating);
+      if (counts[rounded] !== undefined) counts[rounded]++;
+      score += rating;
+    });
 
-  const averageRating = totalRatings
-    ? (totalScore / totalRatings).toFixed(1)
-    : 0;
+    return {
+      counts,
+      average: ratingData.length ? (score / ratingData.length).toFixed(1) : 0,
+    };
+  }, [ratingData]);
+
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
 
   return (
     <div className="p-6 backdrop-blur-[50px] max-w-6xl mx-auto rounded-2xl mt-3 shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Ratings & Reviews</h2>
 
       <div className="flex items-center space-x-4">
-        <div className="text-4xl font-bold">{averageRating} ★</div>
+        <div className="text-4xl font-bold">{starStats.average} ★</div>
         <div className="text-gray-600 text-sm">
-          {totalRatings.toLocaleString()} Ratings
+          {ratingData.length.toLocaleString()} Ratings
         </div>
       </div>
 
       <div className="my-4">
-        {Object.entries(starCounts)
+        {Object.entries(starStats.counts)
           .reverse()
           .map(([star, count]) => (
             <div key={star} className="flex items-center text-sm mb-1">
@@ -114,7 +170,9 @@ const ProductReviewSection = ({ product, refetch }) => {
               <div className="flex-1 mx-2 h-2 bg-gray-200 rounded overflow-hidden">
                 <div
                   className="h-full bg-green-500"
-                  style={{ width: `${(count / totalRatings) * 100 || 0}%` }}
+                  style={{
+                    width: `${(count / ratingData.length) * 100 || 0}%`,
+                  }}
                 ></div>
               </div>
               <span>{count.toLocaleString()}</span>
@@ -126,8 +184,6 @@ const ProductReviewSection = ({ product, refetch }) => {
         {ratingData.slice(0, 6).map((review, i) => {
           const isLiked = review?.likes?.includes(user?._id);
           const isDisliked = review?.dislikes?.includes(user?._id);
-          const likeCount = review?.likes?.length || 0;
-          const dislikeCount = review?.dislikes?.length || 0;
 
           return (
             <div
@@ -149,12 +205,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                   {review?.userId?.username || "Anonymous"}
                 </span>
                 <span className="ml-3 text-xs text-gray-500">
-                  {new Date(review?.timestamp).toLocaleDateString(undefined, {
-                    weekday: "short",
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {formatDate(review?.timestamp)}
                 </span>
               </div>
 
@@ -172,7 +223,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                   ) : (
                     <BiLike />
                   )}
-                  {likeCount}
+                  {review?.likes?.length || 0}
                 </button>
 
                 <button
@@ -184,7 +235,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                   ) : (
                     <BiDislike />
                   )}
-                  {dislikeCount}
+                  {review?.dislikes?.length || 0}
                 </button>
 
                 <button
@@ -196,11 +247,10 @@ const ProductReviewSection = ({ product, refetch }) => {
                   className="flex items-center gap-1 ml-6 text-xs "
                 >
                   <BiSolidCommentDetail className="text-primary text-lg hover:opacity-70" />
-                 {review?.replies?.length} 
+                  {review?.replies?.length || 0}
                 </button>
               </div>
 
-              {/* Replies Section */}
               {activeReplies === review._id && (
                 <div className="mt-3 ml-6 p-3 border-l border-primary space-y-2 bg-base-100 rounded">
                   {review?.replies?.length > 0 ? (
@@ -211,15 +261,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                         </span>{" "}
                         <span>{reply?.message}</span>
                         <div className="text-xs text-gray-500">
-                          {new Date(reply.timestamp).toLocaleDateString(
-                            undefined,
-                            {
-                              weekday: "short",
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
+                          {formatDate(reply.timestamp)}
                         </div>
                       </div>
                     ))
@@ -243,7 +285,6 @@ const ProductReviewSection = ({ product, refetch }) => {
         })}
       </div>
 
-      {/* Reply Modal */}
       {isReplyModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-200 rounded-lg p-6 max-w-md w-full">
