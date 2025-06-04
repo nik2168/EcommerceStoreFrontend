@@ -86,7 +86,8 @@ const ProductReviewSection = ({ product, refetch }) => {
         const review = cloned.ratingData.find(
           (r) => r._id.toString() === reviewId
         );
-        review.likes = newData;
+        review.dislikes = newData.dislikesData;
+        review.likes = newData.likesData;
         return cloned;
       });
     },
@@ -100,7 +101,8 @@ const ProductReviewSection = ({ product, refetch }) => {
         const review = cloned.ratingData.find(
           (r) => r._id.toString() === reviewId
         );
-        review.dislikes = newData;
+        review.dislikes = newData.dislikesData;
+        review.likes = newData.likesData;
         return cloned;
       });
     },
@@ -215,19 +217,19 @@ const ProductReviewSection = ({ product, refetch }) => {
 
               <div className="flex items-center gap-3 mt-1 text-sm">
                 <button
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-lg"
                   onClick={() => likeReviewHandler(review._id)}
                 >
                   {isLiked ? (
                     <BiSolidLike className="text-green-600" />
                   ) : (
-                    <BiLike />
+                    <BiLike className="" />
                   )}
-                  {review?.likes?.length || 0}
+                  <span className=" text-xs">{review?.likes?.length || 0}</span>
                 </button>
 
                 <button
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-lg"
                   onClick={() => dislikeReviewHandler(review._id)}
                 >
                   {isDisliked ? (
@@ -235,7 +237,9 @@ const ProductReviewSection = ({ product, refetch }) => {
                   ) : (
                     <BiDislike />
                   )}
-                  {review?.dislikes?.length || 0}
+                  <span className=" text-xs">
+                    {review?.dislikes?.length || 0}
+                  </span>
                 </button>
 
                 <button
