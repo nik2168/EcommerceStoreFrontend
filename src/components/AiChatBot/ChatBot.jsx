@@ -12,6 +12,8 @@ import {
 import { loginUser, logoutUser, setOnlineUsers } from "../../features/user/userSlice";
 import axios from "axios";
 import useSocket from "../../utils/socket";
+import ReactMarkdown from "react-markdown"
+
 
 
 const Chatbot = () => {
@@ -22,7 +24,6 @@ const Chatbot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
     { role: "assistant", content: "Hi, how can I help you today?" },
- 
   ]);
 
   const [isThinking, setIsThinking] = useState(false);
@@ -54,7 +55,7 @@ const Chatbot = () => {
     }, [dispatch]);
 
   const recommendedQuestions = [
-    "Suggest me best iphone",
+    "Show me some best iphones",
     "Suggest a gift under $50",
     "Suggest me some shirts under $20",
   ];
@@ -111,7 +112,6 @@ const Chatbot = () => {
     setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
     setIsThinking(true);
-
 
   };
 
@@ -226,10 +226,10 @@ const Chatbot = () => {
           >
             <div className="flex flex-col space-y-1.5 pb-4">
               <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
-                Nox Chatbot
+                Noxy AI Chatbot
               </h2>
               <p className="text-sm text-[#6b7280] leading-3">
-                Powered by Gemini + !Tensorflow.js
+                Powered by Gemini + Tensorflow.js
               </p>
             </div>
 
@@ -329,7 +329,7 @@ const Chatbot = () => {
           {/* Header */}
           <div className="flex flex-col space-y-1.5 pb-4">
             <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
-              Nox Chatbot
+              Noxy AI Chatbot
             </h2>
             <p className="text-sm text-[#6b7280] leading-3">
               Powered by Gemini + Tensorflow.js
@@ -367,9 +367,9 @@ const Chatbot = () => {
                     </div>
                   )}
                   <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-700 max-w-[100%]">
-                    {msg.content}
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
                     {/* If assistant recommends products, render them */}
-                    {msg?.products?.length && (
+                    {msg?.products?.length && msg?.type && (
                       <div className="mt-3 overflow-x-auto flex gap-3 pb-2 scrollbar">
                         {msg?.products?.map((product) => (
                           <div
@@ -382,7 +382,7 @@ const Chatbot = () => {
                             <img
                               src={product.image.url}
                               alt={product.name}
-                              className="w-full h-20 object-cover rounded"
+                              className="w-25 h-20 object-cover rounded"
                             />
                             <p className="text-xs mt-2 font-semibold">
                               {product.name}
