@@ -13,7 +13,7 @@ const TopSellingProduct = () => {
 
   if (isLoading) return <Loading />;
 
-  const products = data?.sortedProductsData || [];
+  const products = data?.products || [];
 
   return (
     <section className="px-4 py-8 md:px-8 lg:px-12 xl:px-16 backdrop-blur-lg ">
