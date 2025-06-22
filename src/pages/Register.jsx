@@ -55,7 +55,7 @@ const Register = () => {
         { email, password, username },
         config
       );
-      dispatch(loginUser(data.user));
+      dispatch(loginUser(data));
       toast.success(data?.message, { id: toastId });
     } catch (err) {
       console.log(err);

@@ -6,7 +6,7 @@ const themes = {
 };
 
 const getUserFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem('user')) || null;
+  return JSON.parse(localStorage.getItem("user")) || null;
 };
 
 const getThemeFromLocalStorage = () => {
@@ -28,18 +28,21 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loginUser: (state, action) => {
-      if (action.payload.role.toString() == "admin") {
+      if (action.payload.user.role.toString() == "admin") {
         state.isAdmin = true;
       }
 
-      state.user = action.payload;
+      state.user = action.payload.user;
 
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      if (action.payload.token)
+        localStorage.setItem("nox_token", action.payload.token);
     },
     logoutUser: (state) => {
       state.isAdmin = false;
       state.user = null;
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
+      localStorage.removeItem("nox_token");
     },
 
     setOnlineUsers: (state, action) => {

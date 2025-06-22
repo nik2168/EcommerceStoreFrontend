@@ -4,23 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { server } from "../../features/config";
 import { useSocketEvents } from "../../hooks/hook";
+import { AIRESPONSE, NEW_MESSAGE, ONLINE_USERS } from "../../utils/events";
 import {
-  AIRESPONSE,
-  NEW_MESSAGE,
-  ONLINE_USERS
-} from "../../utils/events";
-import { loginUser, logoutUser, setOnlineUsers } from "../../features/user/userSlice";
+  loginUser,
+  logoutUser,
+  setOnlineUsers,
+} from "../../features/user/userSlice";
 import axios from "axios";
 import useSocket from "../../utils/socket";
-import ReactMarkdown from "react-markdown"
-
-
+import ReactMarkdown from "react-markdown";
 
 const Chatbot = () => {
   const user = useSelector((state) => state.userState.user);
   const dispatch = useDispatch();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
     { role: "assistant", content: "Hi, how can I help you today?" },
@@ -41,26 +39,27 @@ const Chatbot = () => {
     }
     setIsOpen(!isOpen);
   };
-    useEffect(() => {
-      axios
-        .get(`${server}/api/v1/user/profile`, { withCredentials: true })
-        .then(({ data }) => {
-          // console.log(data?.user?.role)
-          dispatch(loginUser(data?.user));
-        })
-        .catch((err) => {
-          console.log(err);
-          dispatch(logoutUser());
-        });
-    }, [dispatch]);
+  useEffect(() => {
+    axios
+      .get(`${server}/api/v1/user/profile`, {
+        withCredentials: true,
+        authorization: `Bearer ${localStorage.getItem("nox_token")}`,
+      })
+      .then(({ data }) => {
+        // console.log(data?.user?.role)
+        dispatch(loginUser(data));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(logoutUser());
+      });
+  }, [dispatch]);
 
   const recommendedQuestions = [
     "Show me some best iphones",
     "Suggest a gift under $50",
     "Suggest me some shirts under $20",
   ];
-
-
 
   const handleQuestionClick = (question) => {
     setInput(question);
@@ -88,7 +87,6 @@ const Chatbot = () => {
   //     console.log("Socket connected:", socket.current.id);
   //   });
 
-
   //   socket.current.on("disconnect", () => {
   //     console.log("Socket disconnected");
   //   });
@@ -105,14 +103,18 @@ const Chatbot = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
-      const isProductQuery = /show me|suggest|deal|gift|recommend/i.test(input);
+    const isProductQuery = /show me|suggest|deal|gift|recommend/i.test(input);
 
-    const newUserMessage = { role: "user", content: input, type: isProductQuery ? true : false,  userId: user._id };
+    const newUserMessage = {
+      role: "user",
+      content: input,
+      type: isProductQuery ? true : false,
+      userId: user._id,
+    };
     socket?.current?.emit(NEW_MESSAGE, newUserMessage);
     setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
     setIsThinking(true);
-
   };
 
   // const newMessageHandler = useCallback((data) => {
@@ -120,16 +122,15 @@ const Chatbot = () => {
   //   setMessages((prev) => [...prev, data]);
   // }, []);
 
-
   const aiResponseHandler = useCallback((data) => {
-    if (data?.userId.toString() === user?._id.toString()){
-       setMessages((prev) => [...prev, data]);
-    setIsThinking(false);
+    if (data?.userId.toString() === user?._id.toString()) {
+      setMessages((prev) => [...prev, data]);
+      setIsThinking(false);
     }
   }, []);
 
   const onlineUsersHandler = (data) => {
-  dispatch(setOnlineUsers(data));
+    dispatch(setOnlineUsers(data));
   };
 
   const eventHandler = {
@@ -138,7 +139,6 @@ const Chatbot = () => {
   };
 
   useSocketEvents(socket?.current, eventHandler);
-
 
   const [showGuide, setShowGuide] = useState(true);
   // useEffect(() => {
@@ -150,7 +150,6 @@ const Chatbot = () => {
     // localStorage.setItem("chatGuideDismissed", "true");
     setShowGuide(false);
   };
-  
 
   return (
     <>
@@ -433,10 +432,4 @@ const Chatbot = () => {
   );
 };
 
-
-
-
-
 export default Chatbot;
-
-

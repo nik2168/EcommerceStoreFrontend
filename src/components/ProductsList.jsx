@@ -1,85 +1,98 @@
+import { Link } from "react-router-dom";
+import { formatPrice } from "../utils";
+import { BsStarFill } from "react-icons/bs";
 
-
-import { Link } from 'react-router-dom';
-import { formatPrice } from '../utils';
-import { BsStarFill } from 'react-icons/bs';
-// import { productData } from '../data/data';
-
-const ProductsList = ({data}) => {
-  const products = data;
-
+const ProductsList = ({ data: products }) => {
   return (
-    <div className='mt-8 grid gap-y-3'>
+    <div className="mt-8 grid gap-4">
       {products.map((product) => {
-        const { title, price, image, company, description } = product;
-        const dollarsAmount = formatPrice(price);
-        const incPrice = formatPrice(Number(price) + (Number(price) * 0.3));
+        const {
+          _id,
+          title,
+          price,
+          image,
+          company,
+          description,
+          rating,
+          ratingData,
+        } = product;
+
+        const actualPrice = formatPrice(price);
+        const inflatedPrice = formatPrice(price * 1.3);
+        const exchangeOffer = formatPrice(price * 0.5);
+        const isGoodRating = rating >= 3;
+
         return (
           <Link
-            key={product._id}
-            to={`/products/${product._id}`}
-            className="p-2 md:p-4 lg:p-4 w-full border-2 border-base-300  rounded-lg backdrop-blur-[50px] flex flex-row gap-y-4  shadow-xl hover:shadow-2xl duration-300 "
+            key={_id}
+            to={`/products/${_id}`}
+            className="p-4 border-2 border-base-300 rounded-lg shadow-xl hover:shadow-2xl duration-300 flex flex-col sm:flex-row gap-4 backdrop-blur-[50px]"
           >
-            <div className="md:w-[40%] lg:w-[20%] mr-3 h-auto">
+            {/* Image */}
+            <div className="flex-shrink-0">
               <img
                 src={image.url}
                 alt={title}
-                className="h-[8rem] w-[8rem] rounded-lg md:h-[15rem] md:w-[15rem] lg:h-52 lg:w-52 object-cover group-hover:scale-105 transition duration-300"
+                loading="lazy"
+                className="w-32 h-32 sm:w-48 sm:h-48 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 
-            <div className="ml-0 s w-[30%] md:w-[60%] lg:w-[60%] h-[9rem] ">
-              <h3 className="capitalize font-medium text-sm md:text-lg  lg:text-lg">
+            {/* Product Info */}
+            <div className="flex-grow flex flex-col justify-between gap-2">
+              <h3 className="capitalize font-medium text-sm sm:text-lg">
                 {title}
               </h3>
-              <div className="flex flex-row justify-start mt-3  items-center">
+
+              {/* Rating */}
+              <div className="flex items-center gap-2">
                 <div
-                  className={`flex flex-row justify-center items-center py-1 px-2 md:px-3 lg:px-3 gap-1 rounded-md ${
-                    product?.rating >= 3 ? " bg-green-600" : " bg-yellow-500"
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-white text-xs sm:text-sm ${
+                    isGoodRating ? "bg-green-600" : "bg-yellow-500"
                   }`}
                 >
-                  <p className="text-white text-[0.7rem] md:text-[0.9rem] lg:text-[0.9rem]  font-bold">
-                    {product?.rating}
-                  </p>
-                  <BsStarFill className="text-white size-2" />
+                  <span>{rating}</span>
+                  <BsStarFill className="text-white size-3" />
                 </div>
-
-                <p className="ml-2 text-blue-400 text-[0.7rem] md:text-[0.9rem] lg:text-[0.9rem] font-medium">
-                  {product?.ratingData?.length} ratings
-                </p>
+                <span className="text-blue-400 text-xs sm:text-sm font-medium">
+                  {ratingData?.length || 0} ratings
+                </span>
               </div>
-              <h4 className="capitalize text-md font-bold my-3  text-neutral-heading">
+
+              <h4 className="capitalize text-md font-bold text-neutral-heading">
                 {company.name}
               </h4>
-              <div className="md:visible lg:visible invisible">
-                {description.split(".").map((i) => {
-                  return (
-                    <p className="text-xs  text-wrap">
-                      - {i.slice(0, 230)}
-                      {i.length > 230 ? "..." : ""}
-                    </p>
-                  );
-                })}
+
+              {/* Description - visible on md+ */}
+              <div className="hidden md:block text-xs opacity-80 space-y-1">
+                {description
+                  .split(".")
+                  .slice(0, 2)
+                  .map((sentence, i) =>
+                    sentence.trim() ? (
+                      <p key={i}>
+                        - {sentence.slice(0, 230)}
+                        {sentence.length > 230 ? "..." : ""}
+                      </p>
+                    ) : null
+                  )}
               </div>
             </div>
 
-            <div className="w-[50%] md:w-[40%] lg:w-[40%] flex flex-col items-end gap-1 sm:w-full justify-start">
-              <p className=" ml-0 text-primary sm:ml-auto text-sm md:text-lg lg:text-lg font-bold">
-                {dollarsAmount}
+            {/* Pricing Info */}
+            <div className="flex flex-col items-end justify-start text-right gap-1 sm:gap-2">
+              <p className="text-primary text-sm sm:text-lg font-bold">
+                {actualPrice}
               </p>
-              <p className=" text-xs md:text-sm lg:text-sm ">
-                <span className="line-through">{incPrice}</span>{" "}
-                <span className="text-green-600 ml-3 ">30% off </span>
+              <p className="text-xs sm:text-sm">
+                <span className="line-through">{inflatedPrice}</span>
+                <span className="ml-2 text-green-600">30% off</span>
               </p>
-              <p className=" ml-0 sm:ml-auto text-xs "> free delivery</p>
-              <p className="  text-xs md:text-xs lg:text-xs bg-violet-300 text-violet-900 px-2 py-1 rounded-md">
-                {" "}
-                <strong>{formatPrice(price * 0.5)}</strong> exchange off
+              <p className="text-xs text-gray-500">Free delivery</p>
+              <p className="text-xs bg-violet-300 text-violet-900 px-2 py-1 rounded-md">
+                <strong>{exchangeOffer}</strong> exchange off
               </p>
-              <p className=" ml-0 sm:ml-auto text-xs md:text-sm lg:text-sm text-green-600 ">
-                {" "}
-                Bank Offers
-              </p>
+              <p className="text-xs sm:text-sm text-green-600">Bank Offers</p>
             </div>
           </Link>
         );
@@ -87,4 +100,5 @@ const ProductsList = ({data}) => {
     </div>
   );
 };
+
 export default ProductsList;

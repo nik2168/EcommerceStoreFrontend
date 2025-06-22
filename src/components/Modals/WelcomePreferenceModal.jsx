@@ -90,7 +90,6 @@ const WelcomePreferenceModal = ({ isOpen, onClose, onSave }) => {
   const { user } = useSelector((state) => state.userState);
   if (!isOpen) return null;
 
-
   const screenWidth = window.innerWidth;
   let isMobile = screenWidth <= 640;
 
@@ -133,19 +132,21 @@ const WelcomePreferenceModal = ({ isOpen, onClose, onSave }) => {
             </h3>
           </div>
           <div className="flex flex-wrap gap-2 text-xs md:text-sm lg:text-md">
-            {categories?.slice(1, isMobile ? 9 : categories.length).map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => toggleSelection("category", cat)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedCategories.includes(cat)
-                    ? "bg-primary text-white border-primary"
-                    : "bg-white/20 text-white border-white/30"
-                } hover:bg-primary hover:text-white transition`}
-              >
-                {cat.name}
-              </button>
-            ))}
+            {categories
+              ?.slice(1, isMobile ? 9 : categories.length)
+              .map((cat) => (
+                <button
+                  key={cat._id}
+                  onClick={() => toggleSelection("category", cat)}
+                  className={`px-4 py-2 rounded-full border ${
+                    selectedCategories.includes(cat)
+                      ? "bg-primary text-white border-primary"
+                      : "bg-white/20 text-white border-white/30"
+                  } hover:bg-primary hover:text-white transition`}
+                >
+                  {cat.name}
+                </button>
+              ))}
           </div>
         </div>
 

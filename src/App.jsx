@@ -45,28 +45,6 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-
-
-    // const [lazyUserCartQuery] = useLazyFetchUserCartQuery();
-  
-    // useEffect(() => {
-    //   const fetchProductData = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //       const res = await lazyUserCartQuery(productId);
-
-    //         dispatch(setCart(res.data.cartData.products));
-
-    //       const p = res.data.product;
-    //     } catch (error) {
-    //       console.log(error);
-    //       setIsLoading(false);
-    //     }
-    //   };
-  
-    //  if(user) fetchProductData();
-    // }, []);
-
   // Fetch Cart Data from the server and set it in the Redux store
   const { isLoading, data, isError, error, refetch } = useFetchUserCartQuery(
     {}
@@ -79,11 +57,16 @@ const App = () => {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem("nox_token");
+
     axios
-      .get(`${server}/api/v1/user/profile`, { withCredentials: true })
+      .get(`${server}/api/v1/user/profile`, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then(({ data }) => {
         // console.log(data?.user?.role)
-        dispatch(loginUser(data?.user));
+        dispatch(loginUser(data));
       })
       .catch((err) => {
         console.log(err);
@@ -102,11 +85,7 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<SingleProduct />} />
-            <Route
-              element={
-                  <ProtectRoute user={user} />
-              }
-            >
+            <Route element={<ProtectRoute user={user} />}>
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
@@ -134,19 +113,19 @@ const App = () => {
           />
 
           <Route element={<AdminProtectedRoute user={user} />}>
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/transactions" element={<Transactions />} />
-          <Route path="/admin/product" element={<Product />} />
-          <Route path="/admin/product/add" element={<AddProductAdmin />} />
-          <Route path="/admin/product/:id" element={<SingleProductAdmin />} />
-          <Route path="/admin/category" element={<Category />} />
-          <Route path="/admin/category/add" element={<AddCategory />} />
-          <Route path="/admin/category/:id" element={<SingleCategory />} />
-          <Route path="/admin/company" element={<Company />} />
-          <Route path="/admin/company/add" element={<AddCompany />} />
-          <Route path="/admin/company/:id" element={<SingleCompany />} />
-          <Route path="/admin/analytics" element={<Analytics />} />
-          <Route path="/admin/settings" element={<Settings />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/transactions" element={<Transactions />} />
+            <Route path="/admin/product" element={<Product />} />
+            <Route path="/admin/product/add" element={<AddProductAdmin />} />
+            <Route path="/admin/product/:id" element={<SingleProductAdmin />} />
+            <Route path="/admin/category" element={<Category />} />
+            <Route path="/admin/category/add" element={<AddCategory />} />
+            <Route path="/admin/category/:id" element={<SingleCategory />} />
+            <Route path="/admin/company" element={<Company />} />
+            <Route path="/admin/company/add" element={<AddCompany />} />
+            <Route path="/admin/company/:id" element={<SingleCompany />} />
+            <Route path="/admin/analytics" element={<Analytics />} />
+            <Route path="/admin/settings" element={<Settings />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

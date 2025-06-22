@@ -1,31 +1,24 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { useCreateNewOrderMutation } from '../features/api';
-import { useAsyncMutation } from '../hooks/hook';
-import FormInput from './FormInput';
-import SubmitBtn from './SubmitBtn';
-import axios from 'axios';
-import { server } from '../features/config';
-import toast from 'react-hot-toast';
-
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useCreateNewOrderMutation } from "../features/api";
+import { useAsyncMutation } from "../hooks/hook";
+import FormInput from "./FormInput";
+import SubmitBtn from "./SubmitBtn";
+import axios from "axios";
+import { server } from "../features/config";
+import toast from "react-hot-toast";
 
 const CheckoutForm = () => {
+  const { cartItems, orderTotal, numItemsInCart } = useSelector(
+    (state) => state.cartState
+  );
 
-    const {cartItems, orderTotal, numItemsInCart} = useSelector((state) => state.cartState);
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const navigate = useNavigate();
 
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
-    const [phone, setPhone] = useState('');
-        const navigate = useNavigate();
-
-
-        // const [
-        //   createNewOrderMutation,
-        //   isLoadingCreateOrderMutation,
-        //   responseData,
-        // ] = useAsyncMutation(useCreateNewOrderMutation);
-        
   const createOrderHandler = async (e) => {
     e.preventDefault();
 
@@ -37,18 +30,7 @@ const CheckoutForm = () => {
       };
     });
 
-    // const data = {
-    //   name,
-    //   address,
-    //   phone,
-    //   cartItems: cartItemsIds,
-    //   numItemsInCart,
-    // };
-    // create a new order
-    // await createNewOrderMutation("creating order ...", data);
-
-
-    const toastId = toast.loading("redirecting to payment page...");  
+    const toastId = toast.loading("redirecting to payment page...");
     const body = {
       amount: orderTotal * 100,
       currency: "USD",
@@ -60,11 +42,12 @@ const CheckoutForm = () => {
       cartItems: JSON.stringify(cartItemsIds),
     };
 
+    const token = localStorage.getItem("nox_token");
     const config = {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
-        // 'Authorization': 'Bearer ' + token
+        Authorization: "Bearer " + token,
       },
     };
 
@@ -75,10 +58,10 @@ const CheckoutForm = () => {
         config
       );
       toast.success(data?.message, { id: toastId });
-console.log(data?.orderId);
+      console.log(data?.orderId);
       window.location.href = `${data?.orderId}`;
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.error(err?.response?.data?.message || "something went wrong !", {
         id: toastId,
       });
@@ -110,13 +93,15 @@ console.log(data?.orderId);
         setValue={setPhone}
       />
       <div className="mt-4">
-        <SubmitBtn text="place your order" handleClick={(e) => createOrderHandler(e)} />
+        <SubmitBtn
+          text="place your order"
+          handleClick={(e) => createOrderHandler(e)}
+        />
       </div>
     </form>
   );
 };
 export default CheckoutForm;
-
 
 // export const action =
 //   (store, queryClient) =>
@@ -160,7 +145,3 @@ export default CheckoutForm;
 //       return null;
 //     }
 //   };
-
-
-
-

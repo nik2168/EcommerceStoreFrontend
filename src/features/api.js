@@ -1,13 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { server } from "./config";
-import { use } from "react";
-import { buildQueries } from "@testing-library/react";
 
 const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${server}`,
-  }),
+  baseQuery: (args, api, extraOptions) => {
+    const token = localStorage.getItem("nox_token");
+    const rawBaseQuery = fetchBaseQuery({
+      baseUrl: server,
+      prepareHeaders: (headers) => {
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return headers;
+      },
+    });
+    return rawBaseQuery(args, api, extraOptions);
+  },
   tagTypes: [
     "Featured",
     "Products",
@@ -340,8 +348,7 @@ const api = createApi({
         method: "GET",
         credentials: "include",
       }),
-    })
-
+    }),
   }),
 });
 
@@ -388,5 +395,5 @@ export const {
   useLazyFetchUserCartQuery,
   useGetSingleProductRecommendationMutation,
   useGetTopRatingProductQuery,
-  useGetFashionProductsQuery
+  useGetFashionProductsQuery,
 } = api;

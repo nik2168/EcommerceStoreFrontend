@@ -123,16 +123,14 @@ export default function PaymentSuccess() {
 
     return () => window.removeEventListener("click", handleInteraction);
   }, [showSuccess]);
-  
-  const dispatch = useDispatch();
-  
-    const { isLoading, data, isError, error, refetch } = useFetchUserCartQuery(
-      {}
-    );
-  
-    useErrors([{ isError, error }]);
-  
 
+  const dispatch = useDispatch();
+
+  const { isLoading, data, isError, error, refetch } = useFetchUserCartQuery(
+    {}
+  );
+
+  useErrors([{ isError, error }]);
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -140,13 +138,15 @@ export default function PaymentSuccess() {
         const { data } = await axios.post(
           `${server}/api/v1/order/payment/verify`,
           { sessionId, address, name, cartItems, phone },
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            authorization: `Bearer ${localStorage.getItem("nox_token")}`,
+          }
         );
         setOrder(data?.order);
         refetch();
-        if(!isLoading) dispatch(setCart(data?.cart));
+        if (!isLoading) dispatch(setCart(data?.cart));
         setTimeout(() => setShowSuccess(false), 3000);
-
       } catch (error) {
         console.error("Payment verification failed:", error);
       }
@@ -302,8 +302,6 @@ export default function PaymentSuccess() {
                           </p>
                         </div>
                       </div>
-
-                    
                     </div>
                   );
                 })}

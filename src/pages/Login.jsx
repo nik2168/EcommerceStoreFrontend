@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLazyFetchUserCartQuery } from "../features/api";
 import { setCart } from "../features/cart/cartSlice";
 
-
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,8 +19,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [fetchUserCart] = useLazyFetchUserCartQuery()
-
+  const [fetchUserCart] = useLazyFetchUserCartQuery();
 
   const fetchCart = async () => {
     try {
@@ -31,16 +29,15 @@ const Login = () => {
       console.error("Failed to fetch cart:", error);
     }
   };
-  
 
   const loginHandler = async (e) => {
     e.preventDefault();
     const toastId = toast.loading("Signing In...");
 
     const config = {
-      withCredentials: true,
       headers: {
         "Content-Type": "application/json",
+        withCredentials: true,
       },
     };
 
@@ -51,7 +48,7 @@ const Login = () => {
         config
       );
 
-      dispatch(loginUser(data.user));
+      dispatch(loginUser(data));
       toast.success(data?.message, { id: toastId });
 
       // Wait for cart to fetch before navigating
@@ -64,10 +61,9 @@ const Login = () => {
       });
     }
   };
-  
 
   const loginAsGuestUser = async () => {
-     navigate('/')
+    navigate("/");
   };
 
   return (

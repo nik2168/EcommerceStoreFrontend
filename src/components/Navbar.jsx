@@ -4,15 +4,13 @@ import { NavLink } from "react-router-dom";
 import NavLinks from "./NavLinks";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../features/user/userSlice";
-import faceId from "../assets/faceId.json"
+import faceId from "../assets/faceId.json";
 import Lottie from "react-lottie-player";
 
-
 const Navbar = () => {
-
-  const {onlineUsers} = useSelector((state) => state.userState);
+  const { onlineUsers } = useSelector((state) => state.userState);
   const dispatch = useDispatch();
-  const {user} = useSelector((state) => state.userState);
+  const { user } = useSelector((state) => state.userState);
 
   const handleTheme = () => {
     dispatch(toggleTheme());
@@ -91,17 +89,19 @@ const Navbar = () => {
               <div className="flex-col items-start justify-center space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 group-hover:delay-[900ms] delay-[0ms]">
                 {onlineUsers?.map((usr, index) => (
                   <div
-                    key={usr.id}
+                    key={usr.id + { index }}
                     className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary backdrop-blur-md text-white shadow-lg transform transition-all duration-500 ease-out opacity-0 translate-y-5 group-hover:opacity-100 group-hover:translate-y-0"
                     style={{
                       transitionDelay: `calc(${index * 100}ms + 900ms)`,
                     }}
                   >
-                    <span className="text-[0.7rem] md:text-[0.7rem] lg:text-[0.7rem] font-medium">{usr.name}</span>
+                    <span className="text-[0.7rem] md:text-[0.7rem] lg:text-[0.7rem] font-medium">
+                      {usr.name}
+                    </span>
 
                     {usr.role === "admin" && (
                       <span className="text-xs font-semibold text-green-400  px-2 py-[2px] rounded-full">
-                       Admin
+                        Admin
                       </span>
                     )}
                   </div>
