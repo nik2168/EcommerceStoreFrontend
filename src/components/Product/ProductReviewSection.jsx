@@ -8,7 +8,7 @@ import {
 } from "react-icons/bi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import useSocket from "../../utils/socket";
+import { getSocket } from "../../utils/socket";
 import { useSocketEvents } from "../../hooks/hook";
 import {
   REVIEW_DISLIKES,
@@ -25,7 +25,7 @@ const ProductReviewSection = ({ product, refetch }) => {
   const [replyText, setReplyText] = useState("");
   const [replyingToReviewId, setReplyingToReviewId] = useState(null);
 
-  const socket = useSocket();
+  const socket = getSocket();
   const { user } = useSelector((state) => state.userState);
   const navigate = useNavigate();
 
@@ -42,13 +42,9 @@ const ProductReviewSection = ({ product, refetch }) => {
     return true;
   };
 
-  const emitSocketEvent = (event, payload) => {
-    socket?.current?.emit(event, payload);
-  };
-
   const likeReviewHandler = (reviewId) => {
     if (!isUserLoggedIn()) return;
-    emitSocketEvent(REVIEW_LIKES, {
+    socket.emit(REVIEW_LIKES, {
       productId: productData._id,
       reviewId,
       userId: user._id,
@@ -57,7 +53,7 @@ const ProductReviewSection = ({ product, refetch }) => {
 
   const dislikeReviewHandler = (reviewId) => {
     if (!isUserLoggedIn()) return;
-    emitSocketEvent(REVIEW_DISLIKES, {
+    socket.emit(REVIEW_DISLIKES, {
       productId: productData._id,
       reviewId,
       userId: user._id,
@@ -68,7 +64,7 @@ const ProductReviewSection = ({ product, refetch }) => {
     if (!isUserLoggedIn()) return;
     if (!replyText.trim()) return alert("Reply cannot be empty");
 
-    emitSocketEvent(REVIEW_REPLY, {
+    socket.emit(REVIEW_REPLY, {
       productId: productData._id,
       reviewId: replyingToReviewId,
       userId: user._id,
@@ -79,55 +75,43 @@ const ProductReviewSection = ({ product, refetch }) => {
     setIsReplyModalOpen(false);
   };
 
-  const reviewLikesHandler = useCallback(
-    ({ productId, newData, reviewId, userId }) => {
-      setProductData((prev) => {
-        const cloned = structuredClone(prev); // or use deep clone below
-        const review = cloned.ratingData.find(
-          (r) => r._id.toString() === reviewId
-        );
-        review.dislikes = newData.dislikesData;
-        review.likes = newData.likesData;
-        return cloned;
-      });
-    },
-    []
-  );
-
-  const reviewDislikesHandler = useCallback(
-    ({ productId, newData, reviewId, userId }) => {
-      setProductData((prev) => {
-        const cloned = structuredClone(prev); // or use deep clone below
-        const review = cloned.ratingData.find(
-          (r) => r._id.toString() === reviewId
-        );
-        review.dislikes = newData.dislikesData;
-        review.likes = newData.likesData;
-        return cloned;
-      });
-    },
-    []
-  );
-
-  const reviewReplyHandler = useCallback(({ reviewId, newData, productId }) => {
-    // console.log(newData)
+  const reviewLikesHandler = useCallback(({ newData, reviewId }) => {
     setProductData((prev) => {
-      const cloned = structuredClone(prev); // or use deep clone below
-      const review = cloned.ratingData.find(
-        (r) => r._id.toString() === reviewId
-      );
+      const cloned = structuredClone(prev);
+      const review = cloned.ratingData.find((r) => r._id === reviewId);
+      review.dislikes = newData.dislikesData;
+      review.likes = newData.likesData;
+      return cloned;
+    });
+  }, []);
+
+  const reviewDislikesHandler = useCallback(({ newData, reviewId }) => {
+    setProductData((prev) => {
+      const cloned = structuredClone(prev);
+      const review = cloned.ratingData.find((r) => r._id === reviewId);
+      review.dislikes = newData.dislikesData;
+      review.likes = newData.likesData;
+      return cloned;
+    });
+  }, []);
+
+  const reviewReplyHandler = useCallback(({ reviewId, newData }) => {
+    setProductData((prev) => {
+      const cloned = structuredClone(prev);
+      const review = cloned.ratingData.find((r) => r._id === reviewId);
       review.replies = newData;
       return cloned;
     });
   }, []);
 
-  useSocketEvents(socket?.current, {
+  useSocketEvents(socket, {
     [REVIEW_LIKES]: reviewLikesHandler,
     [REVIEW_DISLIKES]: reviewDislikesHandler,
     [REVIEW_REPLY]: reviewReplyHandler,
   });
 
   const ratingData = productData?.ratingData || [];
+
   const starStats = useMemo(() => {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     let score = 0;
@@ -183,13 +167,13 @@ const ProductReviewSection = ({ product, refetch }) => {
       </div>
 
       <div className="space-y-4 mt-6">
-        {ratingData.slice(0, 6).map((review, i) => {
+        {ratingData.slice(0, 6).map((review) => {
           const isLiked = review?.likes?.includes(user?._id);
           const isDisliked = review?.dislikes?.includes(user?._id);
 
           return (
             <div
-              key={review._id || i}
+              key={review._id}
               className="p-4 border border-base-300 rounded-lg bg-base-200"
             >
               <div className="flex items-center text-green-600 font-semibold">
@@ -223,9 +207,9 @@ const ProductReviewSection = ({ product, refetch }) => {
                   {isLiked ? (
                     <BiSolidLike className="text-green-600" />
                   ) : (
-                    <BiLike className="" />
+                    <BiLike />
                   )}
-                  <span className=" text-xs">{review?.likes?.length || 0}</span>
+                  <span className="text-xs">{review?.likes?.length || 0}</span>
                 </button>
 
                 <button
@@ -237,7 +221,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                   ) : (
                     <BiDislike />
                   )}
-                  <span className=" text-xs">
+                  <span className="text-xs">
                     {review?.dislikes?.length || 0}
                   </span>
                 </button>
@@ -248,7 +232,7 @@ const ProductReviewSection = ({ product, refetch }) => {
                       activeReplies === review._id ? null : review._id
                     )
                   }
-                  className="flex items-center gap-1 ml-6 text-xs "
+                  className="flex items-center gap-1 ml-6 text-xs"
                 >
                   <BiSolidCommentDetail className="text-primary text-lg hover:opacity-70" />
                   {review?.replies?.length || 0}

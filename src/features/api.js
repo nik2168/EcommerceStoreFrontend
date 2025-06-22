@@ -302,8 +302,8 @@ const api = createApi({
     }),
 
     adminOrdersData: builder.query({
-      query: () => ({
-        url: "api/v1/admin/orders/data",
+      query: ({ page, search }) => ({
+        url: `api/v1/admin/orders/data?page=${page}&search=${search}`,
         method: "GET",
         credentials: "include",
       }),

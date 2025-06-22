@@ -12,32 +12,30 @@ import Chatbot from "../../../components/AiChatBot/ChatBot.jsx";
 
 const AdminLayout = () => (WrapComp) => {
   return (props) => {
-
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-
-
-  useEffect(() => {
-    axios
-      .get(`${server}/api/v1/user/profile`, { withCredentials: true })
-      .then(({ data }) => {
-        // console.log(data?.user?.role)
-        dispatch(loginUser(data?.user));
-        if(data?.user?.role !== "admin"){
-          navigate("/login")
-          toast.error("Not Authenticated !")
-        }
-
-      })
-      .catch((err) => {
-        console.log(err.response.data.message);
-        navigate("/login")
-      });
-  }, []);
-
-
+    useEffect(() => {
+      axios
+        .get(`${server}/api/v1/user/profile`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("nox_token")}`,
+          },
+        })
+        .then(({ data }) => {
+          // console.log(data?.user?.role)
+          dispatch(loginUser(data));
+          if (data?.user?.role !== "admin") {
+            navigate("/login");
+            toast.error("Not Authenticated !");
+          }
+        })
+        .catch((err) => {
+          console.log(err.response.data.message);
+          navigate("/login");
+        });
+    }, []);
 
     return (
       <>
@@ -58,24 +56,11 @@ const AdminLayout = () => (WrapComp) => {
             </main>
           </div>
           <LeftSidebar />
-          <RightSidebar/>
-                <Chatbot />
-          
+          <RightSidebar />
+          {/* <Chatbot /> */}
         </div>
       </>
     );
   };
 };
 export default AdminLayout;
-
-// const AppLayout = () => (WrapComp) => {
-//   return (props) => {
-//     return (
-//       <AdminLayout>
-//         <WrapComp {...props} />
-//       </AdminLayout>
-//     );
-//   }
-// };
-
-// export default AppLayout;

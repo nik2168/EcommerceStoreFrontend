@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getSocket } from "../../utils/socket";
+import { io } from "socket.io-client";
+import { server } from "../../features/config";
+import { useSocketEvents } from "../../hooks/hook";
 import { AIRESPONSE, NEW_MESSAGE, ONLINE_USERS } from "../../utils/events";
 import {
   loginUser,
@@ -9,46 +11,55 @@ import {
   setOnlineUsers,
 } from "../../features/user/userSlice";
 import axios from "axios";
-import { server } from "../../features/config";
+import useSocket from "../../utils/socket";
 import ReactMarkdown from "react-markdown";
-import { useSocketEvents } from "../../hooks/hook";
 
 const Chatbot = () => {
   const user = useSelector((state) => state.userState.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const socket = getSocket();
-  const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
     { role: "assistant", content: "Hi, how can I help you today?" },
   ]);
+
   const [isThinking, setIsThinking] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [showGuide, setShowGuide] = useState(true);
+
+  const messagesEndRef = useRef(null);
+
+  const toggleChat = () => {
+    if (!user) {
+      // navigate("/login");
+      setIsAuthenticated(!isAuthenticated);
+      setIsOpen(false);
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
+  useEffect(() => {
+    axios
+      .get(`${server}/api/v1/user/profile`, {
+        withCredentials: true,
+        authorization: `Bearer ${localStorage.getItem("nox_token")}`,
+      })
+      .then(({ data }) => {
+        // console.log(data?.user?.role)
+        dispatch(loginUser(data));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(logoutUser());
+      });
+  }, [dispatch]);
 
   const recommendedQuestions = [
     "Show me some best iphones",
     "Suggest a gift under $50",
     "Suggest me some shirts under $20",
   ];
-
-  useEffect(() => {
-    axios
-      .get(`${server}/api/v1/user/profile`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("nox_token")}`,
-        },
-      })
-      .then(({ data }) => dispatch(loginUser(data)))
-      .catch((err) => {
-        console.log(err);
-        dispatch(logoutUser());
-      });
-  }, [dispatch]);
 
   const handleQuestionClick = (question) => {
     setInput(question);
@@ -59,7 +70,34 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // const socket = useRef(null); // keep socket instance here
+  // useEffect(() => {
+  //   // 1. Connect to socket server (adjust URL as needed)
+  //   socket.current = io(server, {
+  //     transports: ["websocket"], // optional, more stable
+  //     withCredentials: true, // optional if needed for cookies
+  //   });
+
+  //   // 2. Listen to events
+  //   socket.current.on("connect", () => {
+  //     console.log("Socket connected:", socket.current.id);
+  //   });
+
+  //   socket.current.on("disconnect", () => {
+  //     console.log("Socket disconnected");
+  //   });
+
+  //   // 3. Clean up on unmount
+  //   return () => {
+  //     socket.current.disconnect();
+  //   };
+  // }, []);
+
+  const socket = useSocket();
 
   const onSubmitAction = (e) => {
     e.preventDefault();
@@ -70,45 +108,48 @@ const Chatbot = () => {
     const newUserMessage = {
       role: "user",
       content: input,
-      type: isProductQuery,
+      type: isProductQuery ? true : false,
       userId: user._id,
     };
-
-    socket.emit(NEW_MESSAGE, newUserMessage);
+    socket?.current?.emit(NEW_MESSAGE, newUserMessage);
     setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
     setIsThinking(true);
   };
 
-  const aiResponseHandler = useCallback(
-    (data) => {
-      if (data?.userId.toString() === user?._id.toString()) {
-        setMessages((prev) => [...prev, data]);
-        setIsThinking(false);
-      }
-    },
-    [user]
-  );
+  // const newMessageHandler = useCallback((data) => {
+  //   if(data?.userId == user?._id)
+  //   setMessages((prev) => [...prev, data]);
+  // }, []);
+
+  const aiResponseHandler = useCallback((data) => {
+    if (data?.userId.toString() === user?._id.toString()) {
+      setMessages((prev) => [...prev, data]);
+      setIsThinking(false);
+    }
+  }, []);
 
   const onlineUsersHandler = (data) => {
     dispatch(setOnlineUsers(data));
   };
 
-  useSocketEvents(socket, {
+  const eventHandler = {
     [AIRESPONSE]: aiResponseHandler,
     [ONLINE_USERS]: onlineUsersHandler,
-  });
-
-  const toggleChat = () => {
-    if (!user) {
-      setIsAuthenticated(false);
-      setIsOpen(false);
-      return;
-    }
-    setIsOpen((prev) => !prev);
   };
 
-  const dismissGuide = () => setShowGuide(false);
+  useSocketEvents(socket?.current, eventHandler);
+
+  const [showGuide, setShowGuide] = useState(true);
+  // useEffect(() => {
+  //   const dismissed = localStorage.getItem("chatGuideDismissed");
+  //   if (dismissed === "true") setShowGuide(false);
+  // }, []);
+
+  const dismissGuide = () => {
+    // localStorage.setItem("chatGuideDismissed", "true");
+    setShowGuide(false);
+  };
 
   return (
     <>
@@ -157,7 +198,7 @@ const Chatbot = () => {
 
       {/* Chat Window */}
       {(isOpen || !isAuthenticated) && (
-        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 z-[72] w-[360px] md:w-[440px] h-[530px] md:h-[634px] backdrop-blur-xl  rounded-2xl  border  border-white/30 shadow-xl overflow-hidden transition-all duration-300">
+        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 z-10 w-[360px] md:w-[440px] h-[530px] md:h-[634px] backdrop-blur-xl  rounded-2xl  border  border-white/30 shadow-xl overflow-hidden transition-all duration-300">
           {/* Overlay if not authenticated */}
           {!isAuthenticated && (
             <div className="absolute inset-0 z-10 flex flex-col justify-center items-center   backdrop-blur-3xl text-center">
@@ -184,7 +225,7 @@ const Chatbot = () => {
           >
             <div className="flex flex-col space-y-1.5 pb-4">
               <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
-                Nox AI Chatbot
+                Noxy AI Chatbot
               </h2>
               <p className="text-sm text-[#6b7280] leading-3">
                 Powered by Gemini + Tensorflow.js
@@ -283,11 +324,11 @@ const Chatbot = () => {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] z-[72] w-[360px] md:w-[440px] lg:w-[440px] h-[530px] md:h-[634px] lg:h-[634px] shadow-md flex flex-col">
+        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] z-50 w-[360px] md:w-[440px] lg:w-[440px] h-[530px] md:h-[634px] lg:h-[634px] shadow-md flex flex-col">
           {/* Header */}
           <div className="flex flex-col space-y-1.5 pb-4">
             <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
-              Nox AI Chatbot
+              Noxy AI Chatbot
             </h2>
             <p className="text-sm text-[#6b7280] leading-3">
               Powered by Gemini + Tensorflow.js

@@ -94,7 +94,7 @@ const WelcomePreferenceModal = ({ isOpen, onClose, onSave }) => {
   let isMobile = screenWidth <= 640;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-[76] flex items-center justify-center bg-black/50">
       <div className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-8 w-full max-w-4xl mx-4 shadow-2xl relative text-base-content">
         <button
           className="absolute top-4 right-4 text-white hover:text-primary"

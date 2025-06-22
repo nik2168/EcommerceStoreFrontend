@@ -1,31 +1,41 @@
-// hooks/useSocket.js
-import { useEffect, useRef } from "react";
+// lib/socket.js
 import { io } from "socket.io-client";
 import { server } from "../features/config";
 
-const useSocket = () => {
-  const socket = useRef(null);
+let socket = null;
 
-  useEffect(() => {
-    socket.current = io(server, {
+export const initializeSocket = (token) => {
+  if (!socket) {
+    socket = io(server, {
       transports: ["websocket"],
-      withCredentials: true,
+      auth: {
+        token: token ? `Bearer ${token}` : undefined,
+      },
     });
 
-    socket.current.on("connect", () => {
-      console.log("Socket connected:", socket.current.id);
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket?.id);
     });
 
-    socket.current.on("disconnect", () => {
-      console.log("Socket disconnected");
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
     });
-
-    return () => {
-      socket.current.disconnect();
-    };
-  }, []);
+  }
 
   return socket;
 };
 
-export default useSocket;
+export const getSocket = () => {
+  if (!socket)
+    throw new Error(
+      "❗ Socket not initialized. Call initializeSocket() first."
+    );
+  return socket;
+};
+
+export const disconnectSocket = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+};

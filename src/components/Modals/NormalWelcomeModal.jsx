@@ -21,19 +21,14 @@ import { useNavigate } from "react-router-dom";
 // ];
 // const companies = ["Apple", "Samsung", "Nike", "Sony", "Adidas", "LG"];
 
-const NormalWelcomeModal
- = ({ isOpen, onClose, onSave }) => {
-
-
+const NormalWelcomeModal = ({ isOpen, onClose, onSave }) => {
   const { user } = useSelector((state) => state.userState);
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-[73] flex items-center justify-center bg-black/50">
       <div className="bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-8 w-full max-w-7xl h-[60%] md:h-[80%] lg:h-[80%] mx-4 shadow-2xl relative text-base-content flex flex-col justify-center items-center">
         <button
           className="absolute top-4 right-4 text-white hover:text-primary"
@@ -92,5 +87,4 @@ const NormalWelcomeModal
   );
 };
 
-export default NormalWelcomeModal
-;
+export default NormalWelcomeModal;

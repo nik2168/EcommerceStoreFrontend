@@ -4,18 +4,27 @@ import { Link } from "react-router-dom";
 import CartItemsList from "../components/CartItemsList";
 import CartTotals from "../components/CartTotals";
 import SectionTitle from "../components/SectionTitle";
+import { useEffect } from "react";
 
 const Cart = () => {
   const user = useSelector((state) => state.userState.user);
-  // const {isError, error, data, refetch, isLoading} = useFetchUserCartQuery({token: user?.token});
-  // useErrors([{isError, error}])
+
   const numItemsInCart = useSelector((state) => state.cartState.numItemsInCart);
   const data = useSelector((state) => state.cartState);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   if (numItemsInCart === 0) {
-    return <section className="flex items-center justify-center pt-6">
-    <SectionTitle text="Your cart is empty" />;
-    </section>
+    return (
+      <section className="flex items-center justify-center pt-6">
+        <SectionTitle text="Your cart is empty" />;
+      </section>
+    );
   }
 
   return (

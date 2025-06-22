@@ -19,7 +19,7 @@ const Navbar = () => {
   const numItemsInCart = useSelector((state) => state.cartState.numItemsInCart);
 
   return (
-    <nav className="sticky w-[95%] md:w-[90%] lg:w-[90%] top-2 z-50 bg-base-200 bg-opacity-40 backdrop-blur-lg shadow-lg rounded-xl mx-auto flex justify-space-between my-2">
+    <nav className="sticky w-[95%] md:w-[90%] lg:w-[90%] top-2 z-[70] bg-base-200 bg-opacity-40 backdrop-blur-lg shadow-lg rounded-xl mx-auto flex justify-space-between my-2">
       <div className="navbar p-3">
         {/* START */}
         <div className="navbar-start">

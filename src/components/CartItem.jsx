@@ -33,19 +33,19 @@ const CartItem = ({ cartItem }) => {
         <img
           src={image.url}
           alt={title}
-          className="w-[80%] h-[12rem] object-cover rounded-xl shadow"
+          className="w-[38rem] h-[12rem] object-cover rounded-xl shadow"
         />
       </div>
 
       {/* Info */}
-      <div className="flex flex-row gap-6 justify-around w-full items-center ">
+      <div className="flex flex-row gap-6 justify-around w-[70%] items-center ">
         <div className="flex flex-col items-center justify-center md:justify-start gap-2 text-sm">
-        <h3 className="text-lg font-semibold capitalize text-base-content">
-          {title}
-        </h3>
-        <p className="text-sm text-muted">
-          <span className="font-light text-xs">by</span> {company.name}
-        </p>
+          <h3 className="text-lg font-semibold capitalize text-base-content">
+            {title}
+          </h3>
+          <p className="text-sm text-muted">
+            <span className="font-light text-xs">by</span> {company.name}
+          </p>
           <span>Color:</span>
           <span
             className="w-5 h-5 rounded-full border-2 border-primary"
@@ -78,12 +78,11 @@ const CartItem = ({ cartItem }) => {
             Remove
           </button>
         </div>
-      {/* Price */}
-      <div className="text-lg font-bold text-primary text-center md:text-right md:w-24">
-        {formatPrice(price)}
+        {/* Price */}
+        <div className="text-lg font-bold text-primary text-center md:text-right md:w-24">
+          {formatPrice(price)}
+        </div>
       </div>
-      </div>
-
     </article>
   );
 };
