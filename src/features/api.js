@@ -114,8 +114,8 @@ const api = createApi({
     }),
 
     getUserOrders: builder.query({
-      query: () => ({
-        url: `/api/v1/order/`,
+      query: ({ page, limit }) => ({
+        url: `/api/v1/order/all?limit=${limit}&page=${page}`,
         method: "GET",
         credentials: "include",
       }),
@@ -368,6 +368,7 @@ export const {
   useRemoveCartItemMutation,
   useCreateNewOrderMutation,
   useGetUserOrdersQuery,
+  useLazyGetUserOrdersQuery,
   useLogoutUserMutation,
   useUpdateProductMutation,
   useLazySingleProductQuery,
