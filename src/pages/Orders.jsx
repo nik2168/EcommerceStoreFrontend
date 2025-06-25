@@ -7,7 +7,6 @@ const Orders = () => {
     <>
       <SectionTitle text="Your Orders" />
       <OrdersList />
-      {/* <ComplexPaginationContainer /> */}
     </>
   );
 };
