@@ -6,7 +6,17 @@ const themes = {
 };
 
 const getUserFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem("user")) || null;
+  try {
+    const stored = localStorage.getItem("user");
+
+    // Prevent JSON.parse on bad values
+    if (!stored || stored === "undefined" || stored === "null") return null;
+
+    return JSON.parse(stored);
+  } catch (err) {
+    console.error("Error parsing user from localStorage:", err);
+    return null;
+  }
 };
 
 const getThemeFromLocalStorage = () => {
