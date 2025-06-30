@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useEffect, useState, useMemo, memo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
@@ -10,64 +10,6 @@ import WelcomePreferenceModal from "../components/Modals/WelcomePreferenceModal"
 import NormalWelcomeModal from "../components/Modals/NormalWelcomeModal";
 import { useUpdateUserPreferencesMutation } from "../features/api";
 import { useAsyncMutation } from "../hooks/hook";
-import {
-  FaRobot,
-  FaRocket,
-  FaBolt,
-  FaEye,
-  FaBullseye,
-  FaCogs,
-  FaShoppingCart,
-} from "react-icons/fa";
-
-// Floating icons array
-const floatingIcons = [
-  FaShoppingCart,
-  FaRobot,
-  FaRocket,
-  FaBolt,
-  FaEye,
-  FaBullseye,
-  FaCogs,
-];
-
-// Pre-generated random positions for icons
-const generatePositions = () => {
-  const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const randomPercent = () => `${Math.floor(Math.random() * 80) + 10}%`;
-
-  return floatingIcons.map(() => ({
-    [random(["top", "bottom"])]: randomPercent(),
-    [random(["left", "right"])]: randomPercent(),
-    size: 88 + Math.random() * 40,
-    rotate: Math.random() * 30 - 15,
-  }));
-};
-
-// Floating icon component
-const FloatingIcon = memo(({ Icon, style, scrollY, index }) => {
-  const depth = 0.15 + (index % 5) * 0.03;
-  const translateY = scrollY * depth;
-
-  return (
-    <Icon
-      className="text-base-200"
-      style={{
-        position: "absolute",
-        color: "teal",
-        opacity: 0.9,
-        filter: "blur(6px)",
-        transform: `translateY(${translateY}px) rotate(${style.rotate}deg)`,
-        transition: "transform 0.2s linear",
-        ...style,
-        pointerEvents: "none",
-        userSelect: "none",
-        zIndex: -1,
-      }}
-      size={style.size}
-    />
-  );
-});
 
 const HomeLayout = () => {
   const { user } = useSelector((state) => state.userState);
@@ -75,8 +17,6 @@ const HomeLayout = () => {
   const [isPageLoading, setPageLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showNormalModal, setNormalModal] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [positions] = useState(generatePositions());
 
   const [updateUserPreferences] = useAsyncMutation(
     useUpdateUserPreferencesMutation
@@ -108,24 +48,6 @@ const HomeLayout = () => {
     });
   };
 
-  // Scroll optimization using requestAnimationFrame
-  useEffect(() => {
-    let frameId = null;
-    const handleScroll = () => {
-      if (frameId) return;
-      frameId = requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-        frameId = null;
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (frameId) cancelAnimationFrame(frameId);
-    };
-  }, []);
-
   useEffect(() => {
     const timer = setTimeout(() => setPageLoading(false), 300);
     return () => clearTimeout(timer);
@@ -150,15 +72,6 @@ const HomeLayout = () => {
         <Loading />
       ) : (
         <section className="relative overflow-hidden min-h-[100vh] max-w-full px-2">
-          {floatingIcons.map((Icon, i) => (
-            <FloatingIcon
-              key={i}
-              Icon={Icon}
-              style={positions[i]}
-              scrollY={scrollY}
-              index={i}
-            />
-          ))}
           <Outlet />
         </section>
       )}

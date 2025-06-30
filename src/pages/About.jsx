@@ -104,7 +104,13 @@ const About = () => {
 
       {/* Powered By Section */}
       <section className="w-full relative z-0">
-        <div className="backdrop-blur-lg py-[5rem] my-2 shadow-xl">
+        <div className="backdrop-blur-lg py-[5rem] my-2 shadow-xl flex flex-col justify-center items-center">
+          <img
+            src={"/logo.png"}
+            alt="Nox AI"
+            style={{ width: 90, height: 90, objectFit: "cover" }}
+            className="blend-screen rounded-md mb-3"
+          />
           <h1 className="text-4xl sm:text-6xl font-bold tracking-wide text-center">
             Nox Cart
           </h1>
