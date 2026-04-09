@@ -13,6 +13,67 @@ import { server } from "../../features/config";
 import ReactMarkdown from "react-markdown";
 import { useSocketEvents } from "../../hooks/hook";
 
+const CHAT_SUBTITLE =
+  import.meta.env.VITE_AI_LABEL ?? "Nox AI · smart shopping help";
+
+const DEFAULT_WELCOME = {
+  role: "assistant",
+  content: "Hi, how can I help you today?",
+};
+
+const CHAT_STORAGE_PREFIX = "noxcart_chat_";
+const MAX_EMIT_HISTORY_MESSAGES = 12;
+const MAX_EMIT_HISTORY_CHARS = 8000;
+const MAX_EMIT_MSG_CHARS = 1500;
+const MAX_STORED_MESSAGES = 80;
+
+/**
+ * Prior turns only (caller should pass `messages` before appending the new user message).
+ */
+function buildEmitHistory(messages) {
+  const pairs = messages
+    .filter(
+      (m) =>
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string"
+    )
+    .map((m) => ({
+      role: m.role,
+      content: m.content.slice(0, MAX_EMIT_MSG_CHARS),
+    }))
+    .slice(-MAX_EMIT_HISTORY_MESSAGES);
+
+  let total = 0;
+  const out = [];
+  for (let i = pairs.length - 1; i >= 0; i--) {
+    const len = pairs[i].content.length + 24;
+    if (total + len > MAX_EMIT_HISTORY_CHARS) break;
+    total += len;
+    out.unshift(pairs[i]);
+  }
+  return out;
+}
+
+function loadStoredMessages(userId) {
+  if (!userId) return null;
+  try {
+    const raw = sessionStorage.getItem(`${CHAT_STORAGE_PREFIX}${userId}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    const valid = parsed.every(
+      (m) =>
+        m &&
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string"
+    );
+    if (!valid) return null;
+    return parsed.slice(-MAX_STORED_MESSAGES);
+  } catch {
+    return null;
+  }
+}
+
 const Chatbot = () => {
   const user = useSelector((state) => state.userState.user);
   const dispatch = useDispatch();
@@ -21,9 +82,8 @@ const Chatbot = () => {
   const socket = getSocket();
   const messagesEndRef = useRef(null);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi, how can I help you today?" },
-  ]);
+  const [messages, setMessages] = useState([DEFAULT_WELCOME]);
+  const [chatStorageReady, setChatStorageReady] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -50,6 +110,33 @@ const Chatbot = () => {
       });
   }, [dispatch]);
 
+  useEffect(() => {
+    setChatStorageReady(false);
+    if (!user?._id) {
+      setMessages([DEFAULT_WELCOME]);
+      return;
+    }
+    const stored = loadStoredMessages(user._id);
+    if (stored?.length) {
+      setMessages(stored);
+    } else {
+      setMessages([DEFAULT_WELCOME]);
+    }
+    setChatStorageReady(true);
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (!user?._id || !chatStorageReady) return;
+    try {
+      sessionStorage.setItem(
+        `${CHAT_STORAGE_PREFIX}${user._id}`,
+        JSON.stringify(messages.slice(-MAX_STORED_MESSAGES))
+      );
+    } catch {
+      /* quota */
+    }
+  }, [messages, user?._id, chatStorageReady]);
+
   const handleQuestionClick = (question) => {
     setInput(question);
     onSubmitAction({ preventDefault: () => {} });
@@ -67,11 +154,14 @@ const Chatbot = () => {
 
     const isProductQuery = /show me|suggest|deal|gift|recommend/i.test(input);
 
+    const history = buildEmitHistory(messages);
+
     const newUserMessage = {
       role: "user",
       content: input,
       type: isProductQuery,
       userId: user._id,
+      history,
     };
 
     socket.emit(NEW_MESSAGE, newUserMessage);
@@ -122,7 +212,7 @@ const Chatbot = () => {
               </p>
             </div>
             <button
-              onClick={() => dismissGuide(false)}
+              onClick={dismissGuide}
               className="text-gray-700 hover:text-black text-lg font-bold px-1 rounded-md"
               aria-label="Dismiss Guide"
             >
@@ -131,7 +221,6 @@ const Chatbot = () => {
           </div>
         </div>
       )}
-      {/* Floating Button */}
       <button
         className="fixed  bottom-4 right-4 inline-flex items-center justify-center text-sm font-medium disabled:pointer-events-none disabled:opacity-50 border rounded-full w-16 h-16 btn btn-primary  m-0 cursor-pointer border-gray-200 p-0 normal-case leading-5 hover:text-gray-900"
         type="button"
@@ -155,12 +244,10 @@ const Chatbot = () => {
         </svg>
       </button>
 
-      {/* Chat Window */}
       {(isOpen || !isAuthenticated) && (
-        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 z-[72] w-[360px] md:w-[440px] h-[530px] md:h-[634px] backdrop-blur-xl  rounded-2xl  border  border-white/30 shadow-xl overflow-hidden transition-all duration-300">
-          {/* Overlay if not authenticated */}
+        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 z-[72] w-[360px] md:w-[440px] h-[530px] md:h-[634px] backdrop-blur-xl rounded-2xl border border-white/30 shadow-xl overflow-hidden flex flex-col bg-base-200 transition-all duration-300">
           {!isAuthenticated && (
-            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center   backdrop-blur-3xl text-center">
+            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center backdrop-blur-3xl text-center">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 Login Required
               </h2>
@@ -176,26 +263,23 @@ const Chatbot = () => {
             </div>
           )}
 
-          {/* Chat content */}
           <div
-            className={`relative z-0 flex flex-col h-full p-6 blur-sm bg-base-200 ${
-              !isAuthenticated ? "pointer-events-none opacity-90" : ""
+            className={`relative z-0 flex flex-col h-full p-6 ${
+              !isAuthenticated ? "pointer-events-none opacity-90 blur-sm" : ""
             }`}
           >
             <div className="flex flex-col space-y-1.5 pb-4">
               <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
                 Nox AI Chatbot
               </h2>
-              <p className="text-sm text-[#6b7280] leading-3">
-                Powered by Gemini + Tensorflow.js
-              </p>
+              <p className="text-sm text-[#6b7280] leading-3">{CHAT_SUBTITLE}</p>
             </div>
 
-            {/* Recommended Questions */}
             <div className="flex flex-wrap gap-2 pb-4">
               {recommendedQuestions.map((question, index) => (
                 <button
                   key={index}
+                  type="button"
                   onClick={() => handleQuestionClick(question)}
                   className="bg-gray-100 text-sm px-3 py-1 text-blue-700 rounded-full hover:bg-gray-200 transition"
                 >
@@ -204,48 +288,66 @@ const Chatbot = () => {
               ))}
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto pr-2 no-scrollbar">
+            <div className="flex-1 overflow-y-auto pr-2 no-scrollbar min-h-0">
               {messages.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex gap-3 my-3 text-sm ${
-                    msg.role === "user" ? "justify-end" : "justify-start"
+                    msg.role === "user"
+                      ? "justify-end text-right"
+                      : "justify-start text-left"
                   }`}
                 >
                   <div className="flex items-start gap-2 max-w-[80%]">
                     {msg.role === "assistant" && (
-                      <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center">
+                      <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center shrink-0">
                         🤖
                       </div>
                     )}
-                    <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-700 max-w-[100%]">
-                      {msg.content}
-                      {msg.type === "product-recommendation" && (
-                        <div className="mt-3 overflow-x-auto flex gap-3 pb-2 scrollbar">
-                          {msg?.products?.map((product) => (
-                            <div
-                              key={product.id}
-                              className="min-w-[120px] bg-white border rounded-md p-2 shadow-sm flex-shrink-0"
-                            >
-                              <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-20 object-cover rounded"
-                              />
-                              <p className="text-xs mt-2 font-semibold">
-                                {product.name}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {product.price}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
+                    <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-700 max-w-[100%] text-left">
+                      {msg.role === "assistant" ? (
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      ) : (
+                        msg.content
                       )}
+                      {msg.role === "assistant" &&
+                        msg.type &&
+                        Array.isArray(msg.products) &&
+                        msg.products.length > 0 && (
+                          <div className="mt-3 overflow-x-auto flex gap-3 pb-2 scrollbar">
+                            {msg.products.map((product) => (
+                              <div
+                                key={product._id}
+                                role="button"
+                                tabIndex={0}
+                                onClick={() =>
+                                  navigate(`/products/${product._id}`)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    navigate(`/products/${product._id}`);
+                                  }
+                                }}
+                                className="min-w-[120px] cursor-pointer bg-white border rounded-md p-2 shadow-sm flex-shrink-0"
+                              >
+                                <img
+                                  src={product.image?.url}
+                                  alt={product.title || product.name || "Product"}
+                                  className="w-full h-20 object-cover rounded"
+                                />
+                                <p className="text-xs mt-2 font-semibold">
+                                  {product.title || product.name}
+                                </p>
+                                <p className="text-xs text-gray-500 font-bold">
+                                  ${product.price}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </div>
                     {msg.role === "user" && (
-                      <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center">
+                      <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center shrink-0">
                         🧑
                       </div>
                     )}
@@ -258,10 +360,9 @@ const Chatbot = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Form */}
             <form
               onSubmit={onSubmitAction}
-              className="flex items-center pt-4 space-x-2"
+              className="flex items-center pt-4 space-x-2 shrink-0"
             >
               <input
                 className="flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
@@ -279,112 +380,6 @@ const Chatbot = () => {
               </button>
             </form>
           </div>
-        </div>
-      )}
-
-      {isOpen && (
-        <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] z-[72] w-[360px] md:w-[440px] lg:w-[440px] h-[530px] md:h-[634px] lg:h-[634px] shadow-md flex flex-col">
-          {/* Header */}
-          <div className="flex flex-col space-y-1.5 pb-4">
-            <h2 className="font-semibold text-gray-700 text-lg tracking-tight">
-              Nox AI Chatbot
-            </h2>
-            <p className="text-sm text-[#6b7280] leading-3">
-              Powered by Gemini + Tensorflow.js
-            </p>
-          </div>
-
-          {/* Recommended Questions */}
-          <div className="flex flex-wrap gap-2 pb-4">
-            {recommendedQuestions.map((question, index) => (
-              <button
-                key={index}
-                onClick={() => handleQuestionClick(question)}
-                className="bg-gray-100 text-sm px-3 py-1 text-blue-700 rounded-full hover:bg-gray-200 transition"
-              >
-                {question}
-              </button>
-            ))}
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto pr-2">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex gap-3 my-3 text-sm ${
-                  msg.role === "user"
-                    ? "justify-end text-right"
-                    : "justify-start text-left"
-                }`}
-              >
-                <div className="flex items-start gap-2 max-w-[80%]">
-                  {msg.role === "assistant" && (
-                    <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center">
-                      🤖
-                    </div>
-                  )}
-                  <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-700 max-w-[100%]">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    {/* If assistant recommends products, render them */}
-                    {msg?.products?.length && msg?.type && (
-                      <div className="mt-3 overflow-x-auto flex gap-3 pb-2 scrollbar">
-                        {msg?.products?.map((product) => (
-                          <div
-                            key={product._id}
-                            onClick={() => {
-                              navigate(`/products/${product._id}`);
-                            }}
-                            className="min-w-[120px] cursor-pointer bg-white border rounded-md p-2 shadow-sm flex-shrink-0"
-                          >
-                            <img
-                              src={product.image.url}
-                              alt={product.name}
-                              className="w-25 h-20 object-cover rounded"
-                            />
-                            <p className="text-xs mt-2 font-semibold">
-                              {product.name}
-                            </p>
-                            <p className="text-xs text-gray-500 font-bold">
-                              ${product.price}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {msg.role === "user" && (
-                    <div className="rounded-full bg-gray-100 border p-1 w-8 h-8 flex items-center justify-center">
-                      🧑
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isThinking && (
-              <div className="text-gray-400 text-sm italic">Thinking...</div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Form */}
-          <form
-            onSubmit={onSubmitAction}
-            className="flex items-center pt-4 space-x-2"
-          >
-            <input
-              className="flex h-10 w-full rounded-md border  border-[#e5e7eb] px-3 py-2 text-sm placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-content focus-visible:ring-offset-2"
-              placeholder="Type your message"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium text-white disabled:pointer-events-none disabled:opacity-50 btn btn-primary  h-10 px-4 py-2"
-            >
-              Send
-            </button>
-          </form>
         </div>
       )}
     </>
